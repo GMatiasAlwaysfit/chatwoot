@@ -34,6 +34,22 @@
             />
           </div>
         </div>
+        <woot-avatar-uploader
+          label="Imagem do template"
+          :src="imageUrl"
+          @change="handleImageUpload"
+        />
+        <div v-if="showDeleteButton" class="avatar-delete-btn">
+          <woot-button
+            type="button"
+            color-scheme="alert"
+            variant="hollow"
+            size="small"
+            @click="deleteImage"
+          >
+            Remover imagem
+          </woot-button>
+        </div>
         <div class="flex flex-row justify-end gap-2 py-2 px-0 w-full">
           <woot-submit-button
             :disabled="
@@ -60,6 +76,7 @@ import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vu
 import Modal from '../../../../components/Modal.vue';
 import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vue';
 import alertMixin from 'shared/mixins/alertMixin';
+import { hasValidAvatarUrl } from 'dashboard/helper/URLHelper';
 
 export default {
   components: {
@@ -82,6 +99,8 @@ export default {
     return {
       shortCode: '',
       content: this.responseContent || '',
+      imageFile: null,
+      imageUrl: '',
       addCanned: {
         showLoading: false,
         message: '',
@@ -98,10 +117,26 @@ export default {
       required,
     },
   },
+  computed: {
+    showDeleteButton() {
+      return hasValidAvatarUrl(this.imageUrl);
+    },
+  },
   methods: {
+    handleImageUpload({ file, url }) {
+      this.imageFile = file;
+      this.imageUrl = url;
+    },
+    async deleteImage() {
+      this.imageFile = null;
+      this.imageUrl = '';
+      this.showAlert(this.$t('PROFILE_SETTINGS.AVATAR_DELETE_SUCCESS'));
+    },
     resetForm() {
       this.shortCode = '';
       this.content = '';
+      this.imageFile = '';
+      this.imageUrl = '';
       this.$v.shortCode.$reset();
       this.$v.content.$reset();
     },
@@ -109,11 +144,16 @@ export default {
       // Show loading on button
       this.addCanned.showLoading = true;
       // Make API Calls
+
+      const formData = new FormData();
+      formData.append('short_code', this.shortCode);
+      formData.append('content', this.content);
+      if (this.imageFile) {
+        formData.append('image', this.imageFile);
+      }
+
       this.$store
-        .dispatch('createCannedResponse', {
-          short_code: this.shortCode,
-          content: this.content,
-        })
+        .dispatch('createCannedResponse', formData)
         .then(() => {
           // Reset Form, Show success message
           this.addCanned.showLoading = false;

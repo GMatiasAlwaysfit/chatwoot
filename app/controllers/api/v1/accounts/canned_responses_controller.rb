@@ -12,6 +12,8 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   end
 
   def update
+    @canned_response.image.purge if canned_response_params[:image].nil? && @canned_response.image.attached?
+
     @canned_response.update!(canned_response_params)
     render json: @canned_response
   end
@@ -28,17 +30,24 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   end
 
   def canned_response_params
-    params.require(:canned_response).permit(:short_code, :content)
+    params.permit(:short_code, :content, :image)
   end
 
   def canned_responses
-    if params[:search]
-      Current.account.canned_responses
-             .where('short_code ILIKE :search OR content ILIKE :search', search: "%#{params[:search]}%")
-             .order_by_search(params[:search])
+    canned_responses = if params[:search]
+                         Current.account.canned_responses
+                                .where('short_code ILIKE :search OR content ILIKE :search', search: "%#{params[:search]}%")
+                                .order_by_search(params[:search])
+                       else
+                         Current.account.canned_responses
+                       end
 
-    else
-      Current.account.canned_responses
+    canned_responses.map do |response|
+      if response.image.attached?
+        response.attributes.merge(image_url: url_for(response.image))
+      else
+        response.attributes
+      end
     end
   end
 end

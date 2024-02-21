@@ -91,6 +91,7 @@
         :id="selectedResponse.id"
         :edshort-code="selectedResponse.short_code"
         :edcontent="selectedResponse.content"
+        :edimg-url="selectedResponse.image_url"
         :on-close="hideEditPopup"
       />
     </woot-modal>

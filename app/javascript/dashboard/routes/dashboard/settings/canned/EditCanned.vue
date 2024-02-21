@@ -31,6 +31,22 @@
             />
           </div>
         </div>
+        <woot-avatar-uploader
+          label="Imagem do template"
+          :src="imageUrl"
+          @change="handleImageUpload"
+        />
+        <div v-if="showDeleteButton" class="avatar-delete-btn">
+          <woot-button
+            type="button"
+            color-scheme="alert"
+            variant="hollow"
+            size="small"
+            @click="deleteImage"
+          >
+            Remover imagem
+          </woot-button>
+        </div>
         <div class="flex flex-row justify-end gap-2 py-2 px-0 w-full">
           <woot-submit-button
             :disabled="
@@ -57,6 +73,7 @@ import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vu
 import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vue';
 import alertMixin from 'shared/mixins/alertMixin';
 import Modal from '../../../../components/Modal.vue';
+import { hasValidAvatarUrl } from 'dashboard/helper/URLHelper';
 
 export default {
   components: {
@@ -69,6 +86,7 @@ export default {
     id: { type: Number, default: null },
     edcontent: { type: String, default: '' },
     edshortCode: { type: String, default: '' },
+    edimgUrl: { type: String, default: '' },
     onClose: { type: Function, default: () => {} },
   },
   data() {
@@ -79,6 +97,8 @@ export default {
       },
       shortCode: this.edshortCode,
       content: this.edcontent,
+      imageUrl: this.edimgUrl,
+      imageFIle: null,
       show: true,
     };
   },
@@ -95,8 +115,20 @@ export default {
     pageTitle() {
       return `${this.$t('CANNED_MGMT.EDIT.TITLE')} - ${this.edshortCode}`;
     },
+    showDeleteButton() {
+      return hasValidAvatarUrl(this.imageUrl);
+    },
   },
   methods: {
+    handleImageUpload({ file, url }) {
+      this.imageFile = file;
+      this.imageUrl = url;
+    },
+    async deleteImage() {
+      this.imageFile = null;
+      this.imageUrl = '';
+      this.showAlert(this.$t('PROFILE_SETTINGS.AVATAR_DELETE_SUCCESS'));
+    },
     setPageName({ name }) {
       this.$v.content.$touch();
       this.content = name;
@@ -104,6 +136,7 @@ export default {
     resetForm() {
       this.shortCode = '';
       this.content = '';
+      this.imageFile = '';
       this.$v.shortCode.$reset();
       this.$v.content.$reset();
     },
@@ -111,17 +144,22 @@ export default {
       // Show loading on button
       this.editCanned.showLoading = true;
       // Make API Calls
+
+      const formData = new FormData();
+      formData.append('short_code', this.shortCode);
+      formData.append('content', this.content);
+      if (this.imageFile) {
+        formData.append('image', this.imageFile);
+      }
+
       this.$store
-        .dispatch('updateCannedResponse', {
-          id: this.id,
-          short_code: this.shortCode,
-          content: this.content,
-        })
+        .dispatch('updateCannedResponse', { id: this.id, formData })
         .then(() => {
           // Reset Form, Show success message
           this.editCanned.showLoading = false;
           this.showAlert(this.$t('CANNED_MGMT.EDIT.API.SUCCESS_MESSAGE'));
           this.resetForm();
+          this.$store.dispatch('getCannedResponse');
           setTimeout(() => {
             this.onClose();
           }, 10);

@@ -18,6 +18,8 @@ class CannedResponse < ApplicationRecord
 
   belongs_to :account
 
+  has_one_attached :image
+
   scope :order_by_search, lambda { |search|
     short_code_starts_with = sanitize_sql_array(['WHEN short_code ILIKE ? THEN 1', "#{search}%"])
     short_code_like = sanitize_sql_array(['WHEN short_code ILIKE ? THEN 0.5', "%#{search}%"])
