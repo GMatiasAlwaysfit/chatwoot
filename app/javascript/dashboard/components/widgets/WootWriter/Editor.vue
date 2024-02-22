@@ -555,7 +555,7 @@ export default {
     },
     insertCannedResponse(cannedItem) {
       const updatedMessage = replaceVariablesInMessage({
-        message: cannedItem,
+        message: cannedItem.description,
         variables: this.variables,
       });
 
@@ -573,9 +573,22 @@ export default {
           : this.range.from - 1;
 
       this.insertNodeIntoEditor(node, from, this.range.to);
-
+      this.insertCannedImage(cannedItem);
       this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
       return false;
+    },
+    insertCannedImage(cannedItem) {
+      if (cannedItem.image_url) {
+        fetch(cannedItem.image_url)
+          .then(response => response.blob())
+          .then(blob => {
+            const file = new File([blob], cannedItem.image_name, {
+              type: blob.type,
+            });
+
+            this.uploadCannedImageToStorage(file);
+          });
+      }
     },
     insertVariable(variable) {
       if (!this.editorView) {
@@ -627,6 +640,19 @@ export default {
           this.$t(
             'PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.IMAGE_UPLOAD_ERROR'
           )
+        );
+      }
+    },
+    async uploadCannedImageToStorage(file) {
+      try {
+        const { fileUrl } = await uploadFile(file);
+        if (fileUrl) {
+          this.onImageInsertInEditor(fileUrl);
+        }
+        this.showAlert(this.$t('Imagem do template carregada com sucesso'));
+      } catch (error) {
+        this.showAlert(
+          this.$t('Não foi possível fazer o upload da imagem! Tente novamente')
         );
       }
     },

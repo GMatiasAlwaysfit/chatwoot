@@ -159,6 +159,7 @@ export default {
           this.addCanned.showLoading = false;
           this.showAlert(this.$t('CANNED_MGMT.ADD.API.SUCCESS_MESSAGE'));
           this.resetForm();
+          this.$store.dispatch('getCannedResponse');
           this.onClose();
         })
         .catch(error => {

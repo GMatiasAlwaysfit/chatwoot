@@ -44,7 +44,8 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
 
     canned_responses.map do |response|
       if response.image.attached?
-        response.attributes.merge(image_url: url_for(response.image))
+        image_blob = response.image.blob
+        response.attributes.merge(image_url: url_for(response.image), image_name: image_blob.filename.to_s)
       else
         response.attributes
       end
