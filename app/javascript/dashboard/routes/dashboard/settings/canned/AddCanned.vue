@@ -50,6 +50,31 @@
             Remover imagem
           </woot-button>
         </div>
+        <div>
+          <h2>Anexos</h2>
+          <input
+            ref="fileInput"
+            type="file"
+            multiple
+            accept="video/*,audio/*,.3gpp,text/csv,text/plain,application/json,application/pdf,text/rtf,application/zip,application/x-7z-compressed application/vnd.rar application/x-tar,application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/vnd.oasis.opendocument.text,application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,"
+            @change="handleFileUpload"
+          />
+          <ul v-if="attachments.length > 0">
+            <li v-for="(file, index) in attachments" :key="index">
+              {{ file.name }}
+            </li>
+          </ul>
+          <woot-button
+            v-if="attachments.length"
+            type="button"
+            color-scheme="alert"
+            variant="hollow"
+            size="small"
+            @click.prevent="removeAttachment()"
+          >
+            Remover anexos
+          </woot-button>
+        </div>
         <div class="flex flex-row justify-end gap-2 py-2 px-0 w-full">
           <woot-submit-button
             :disabled="
@@ -101,6 +126,7 @@ export default {
       content: this.responseContent || '',
       imageFile: null,
       imageUrl: '',
+      attachments: [],
       addCanned: {
         showLoading: false,
         message: '',
@@ -127,6 +153,13 @@ export default {
       this.imageFile = file;
       this.imageUrl = url;
     },
+    handleFileUpload(event) {
+      const files = event.target.files;
+      this.attachments = Array.from(files);
+    },
+    removeAttachment() {
+      this.attachments = [];
+    },
     async deleteImage() {
       this.imageFile = null;
       this.imageUrl = '';
@@ -150,6 +183,12 @@ export default {
       formData.append('content', this.content);
       if (this.imageFile) {
         formData.append('image', this.imageFile);
+      }
+
+      if (this.attachments && this.attachments.length > 0) {
+        this.attachments.forEach(file => {
+          formData.append('attachments[]', file);
+        });
       }
 
       this.$store
