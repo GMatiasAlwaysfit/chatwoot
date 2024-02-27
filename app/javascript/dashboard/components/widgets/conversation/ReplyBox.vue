@@ -94,6 +94,7 @@
         @toggle-canned-menu="toggleCannedMenu"
         @toggle-variables-menu="toggleVariablesMenu"
         @clear-selection="clearEditorSelection"
+        @get-selected-canned-response="onGetSelectedCannedResponse"
       />
     </div>
     <div v-if="hasAttachments" class="attachment-preview-box" @paste="onPaste">
@@ -903,6 +904,16 @@ export default {
     },
     clearEditorSelection() {
       this.updateEditorSelectionWith = '';
+    },
+    onGetSelectedCannedResponse(cannedItem) {
+      if (cannedItem) {
+        this.onFileUpload({
+          name: cannedItem.name,
+          size: cannedItem.size,
+          type: cannedItem.type,
+          file: cannedItem,
+        });
+      }
     },
     insertIntoTextEditor(text, selectionStart, selectionEnd) {
       const { message } = this;

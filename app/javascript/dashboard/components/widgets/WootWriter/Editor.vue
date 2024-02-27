@@ -573,11 +573,7 @@ export default {
           : this.range.from - 1;
 
       this.insertNodeIntoEditor(node, from, this.range.to);
-      this.insertCannedImage(cannedItem);
-      this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
-      return false;
-    },
-    insertCannedImage(cannedItem) {
+
       if (cannedItem.image_url) {
         fetch(cannedItem.image_url)
           .then(response => response.blob())
@@ -586,9 +582,11 @@ export default {
               type: blob.type,
             });
 
-            this.uploadCannedImageToStorage(file);
+            this.$emit('get-selected-canned-response', file);
           });
       }
+      this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
+      return false;
     },
     insertVariable(variable) {
       if (!this.editorView) {
