@@ -575,18 +575,27 @@ export default {
       this.insertNodeIntoEditor(node, from, this.range.to);
 
       if (cannedItem.image_url) {
-        fetch(cannedItem.image_url)
-          .then(response => response.blob())
-          .then(blob => {
-            const file = new File([blob], cannedItem.image_name, {
-              type: blob.type,
-            });
-
-            this.$emit('get-selected-canned-response', file);
-          });
+        this.convertUrltoFile(cannedItem);
       }
+      if (cannedItem.attachments.length > 0) {
+        cannedItem.attachments.forEach(file => {
+          this.convertUrltoFile(file);
+        });
+      }
+
       this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
       return false;
+    },
+    convertUrltoFile(url) {
+      fetch(url.image_url || url.attachment_url)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], url.image_name || url.name, {
+            type: blob.type,
+          });
+
+          this.$emit('get-selected-canned-response', file);
+        });
     },
     insertVariable(variable) {
       if (!this.editorView) {

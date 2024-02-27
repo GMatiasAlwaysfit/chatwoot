@@ -908,6 +908,7 @@ export default {
     onGetSelectedCannedResponse(cannedItem) {
       if (cannedItem) {
         this.onFileUpload({
+          cannedResponse: true,
           name: cannedItem.name,
           size: cannedItem.size,
           type: cannedItem.type,

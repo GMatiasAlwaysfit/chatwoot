@@ -33,6 +33,7 @@ export default {
         description: cannedMessage.content,
         image_url: cannedMessage.image_url,
         image_name: cannedMessage.image_name,
+        attachments: cannedMessage.attachments,
       }));
     },
   },
