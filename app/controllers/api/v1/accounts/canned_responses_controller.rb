@@ -51,15 +51,17 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
         response_data[:image_url] = url_for(response.image)
         response_data[:image_name] = image_blob.filename.to_s
         response_data[:image_id] = response.image.id
+        response_data[:image_type] = image_blob.content_type
       end
 
       response_data[:attachments] = if response.attachments.attached?
                                       response.attachments.map do |attachment|
                                         attachment_blob = attachment.blob
                                         {
-                                          attachment_url: url_for(attachment),
+                                          url: url_for(attachment),
                                           name: attachment_blob.filename.to_s,
-                                          attachment_id: attachment.id
+                                          attachment_id: attachment.id,
+                                          type: attachment_blob.content_type
                                         }
                                       end
                                     else

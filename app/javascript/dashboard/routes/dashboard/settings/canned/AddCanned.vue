@@ -34,36 +34,71 @@
             />
           </div>
         </div>
-        <woot-avatar-uploader
-          label="Imagem do template"
-          :src="imageUrl"
-          @change="handleImageUpload"
-        />
-        <div v-if="showDeleteButton" class="avatar-delete-btn">
-          <woot-button
-            type="button"
-            color-scheme="alert"
-            variant="hollow"
-            size="small"
-            @click="deleteImage"
+        <div class="flex flex-col items-center mt-2">
+          <h2 class="self-start">Imagem</h2>
+          <div
+            v-if="imageUrl"
+            class="p-3 mb-3 w-full rounded-md flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
           >
-            Remover imagem
-          </woot-button>
+            <img
+              class="p-2 rounded-lg items-center mx-auto text-center h-80"
+              :src="imageUrl"
+              alt="Canned Image"
+            />
+          </div>
+          <div v-if="showDeleteButton" class="avatar-delete-btn mb-3">
+            <woot-button
+              type="button"
+              color-scheme="alert"
+              variant="hollow"
+              size="small"
+              @click="deleteImage"
+            >
+              Remover imagem
+            </woot-button>
+          </div>
         </div>
-        <div>
-          <h2>Anexos</h2>
+        <input
+          id="file"
+          ref="file"
+          type="file"
+          label="Imagem do template"
+          accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+          @change="handleImageUpload"
+          @click="onInputClick"
+        />
+        <div class="flex flex-col items-center mt-4">
+          <h2 class="self-start">Anexos</h2>
           <input
             ref="fileInput"
             type="file"
             multiple
             accept="video/*,audio/*,.3gpp,text/csv,text/plain,application/json,application/pdf,text/rtf,application/zip,application/x-7z-compressed application/vnd.rar application/x-tar,application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/vnd.oasis.opendocument.text,application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,"
             @change="handleFileUpload"
+            @click="onInputClick"
           />
-          <ul v-if="attachments.length > 0">
-            <li v-for="(file, index) in attachments" :key="index">
-              {{ file.name }}
-            </li>
-          </ul>
+          <div v-if="attachments.length > 0" class="w-full">
+            <div v-for="(file, index) in attachments" :key="index">
+              <div
+                v-if="file.type.includes('audio')"
+                class="p-3 mb-3 rounded-md w-full flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+              >
+                <audio controls :src="file.url" />
+              </div>
+              <div
+                v-else-if="file.type.includes('video')"
+                class="p-3 mb-3 rounded-md w-full items-center mx-auto text-center size-full max-h-80 border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+              >
+                <video controls :src="file.url" />
+              </div>
+              <div
+                v-else
+                class="p-3 mb-3 rounded-md w-full items-center mx-auto text-center size-full max-h-80 border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+              >
+                <a target="_blank" download :href="file.url">{{ file.name }}</a>
+              </div>
+            </div>
+          </div>
           <woot-button
             v-if="attachments.length"
             type="button"
@@ -125,7 +160,7 @@ export default {
       shortCode: '',
       content: this.responseContent || '',
       imageFile: null,
-      imageUrl: '',
+      imageUrl: null,
       attachments: [],
       addCanned: {
         showLoading: false,
@@ -149,12 +184,22 @@ export default {
     },
   },
   methods: {
-    handleImageUpload({ file, url }) {
+    onInputClick(event) {
+      event.target.value = '';
+    },
+    handleImageUpload(event) {
+      const [file] = event.target.files;
+
       this.imageFile = file;
-      this.imageUrl = url;
+      this.imageUrl = file ? URL.createObjectURL(file) : null;
     },
     handleFileUpload(event) {
       const files = event.target.files;
+
+      files.forEach(file => {
+        file.url = URL.createObjectURL(file);
+      });
+
       this.attachments = Array.from(files);
     },
     removeAttachment() {

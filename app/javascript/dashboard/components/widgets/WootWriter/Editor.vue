@@ -553,7 +553,7 @@ export default {
 
       return false;
     },
-    insertCannedResponse(cannedItem) {
+    async insertCannedResponse(cannedItem) {
       const updatedMessage = replaceVariablesInMessage({
         message: cannedItem.description,
         variables: this.variables,
@@ -575,7 +575,7 @@ export default {
       this.insertNodeIntoEditor(node, from, this.range.to);
 
       if (cannedItem.image_url) {
-        this.convertUrltoFile(cannedItem);
+        await this.convertUrltoFile(cannedItem);
       }
       if (cannedItem.attachments.length > 0) {
         cannedItem.attachments.forEach(file => {
@@ -586,8 +586,8 @@ export default {
       this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
       return false;
     },
-    convertUrltoFile(url) {
-      fetch(url.image_url || url.attachment_url)
+    async convertUrltoFile(url) {
+      await fetch(url.image_url || url.url)
         .then(response => response.blob())
         .then(blob => {
           const file = new File([blob], url.image_name || url.name, {
