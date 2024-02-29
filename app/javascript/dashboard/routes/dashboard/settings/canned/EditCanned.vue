@@ -32,18 +32,20 @@
           </div>
         </div>
         <div class="flex flex-col items-center mt-2">
-          <h2 class="self-start">Imagem</h2>
+          <h2 class="self-start">Imagens</h2>
           <div
-            v-if="imageUrl"
-            class="p-3 mb-3 w-full rounded-md flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+            v-if="images.length > 0"
+            class="p-3 mb-3 w-full rounded-md flex flex-row flex-wrap justify-center item-center mx-auto text-center size-full border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
           >
-            <img
-              class="p-2 rounded-lg items-center mx-auto text-center h-80"
-              :src="imageUrl"
-              alt="Canned Image"
-            />
+            <div v-for="(file, index) in images" :key="index">
+              <img
+                class="p-2 rounded-md items-center mx-auto text-center max-w-64 max-h-32"
+                :src="file.url"
+                alt="Canned Image"
+              />
+            </div>
           </div>
-          <div v-if="showDeleteButton" class="avatar-delete-btn mb-3">
+          <div v-if="images.length" class="avatar-delete-btn mb-3">
             <woot-button
               type="button"
               color-scheme="alert"
@@ -55,13 +57,14 @@
             </woot-button>
           </div>
         </div>
-        <div v-if="!imageUrl">
+        <div v-if="images.length == 0">
           <input
             id="file"
             ref="file"
             type="file"
             label="Imagem do template"
             accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+            multiple
             @change="handleImageUpload"
             @click="onInputClick"
           />
@@ -137,7 +140,6 @@ import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vu
 import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vue';
 import alertMixin from 'shared/mixins/alertMixin';
 import Modal from '../../../../components/Modal.vue';
-import { hasValidAvatarUrl } from 'dashboard/helper/URLHelper';
 
 export default {
   components: {
@@ -150,7 +152,7 @@ export default {
     id: { type: Number, default: null },
     edcontent: { type: String, default: '' },
     edshortCode: { type: String, default: '' },
-    edimgUrl: { type: String, default: '' },
+    edimage: { type: Array, default: () => {} },
     edattachments: { type: Array, default: () => {} },
     onClose: { type: Function, default: () => {} },
   },
@@ -162,7 +164,7 @@ export default {
       },
       shortCode: this.edshortCode,
       content: this.edcontent,
-      imageUrl: this.edimgUrl,
+      images: this.edimage,
       imageFile: null,
       attachments: this.edattachments,
       show: true,
@@ -181,19 +183,19 @@ export default {
     pageTitle() {
       return `${this.$t('CANNED_MGMT.EDIT.TITLE')} - ${this.edshortCode}`;
     },
-    showDeleteButton() {
-      return hasValidAvatarUrl(this.imageUrl);
-    },
   },
   methods: {
     onInputClick(event) {
       event.target.value = '';
     },
     handleImageUpload(event) {
-      const [file] = event.target.files;
+      const files = event.target.files;
 
-      this.imageFile = file;
-      this.imageUrl = file ? URL.createObjectURL(file) : null;
+      files.forEach(file => {
+        file.url = URL.createObjectURL(file);
+      });
+
+      this.images = Array.from(files);
     },
     handleFileUpload(event) {
       const files = event.target.files;
@@ -208,8 +210,7 @@ export default {
       this.attachments = [];
     },
     async deleteImage() {
-      this.imageFile = null;
-      this.imageUrl = null;
+      this.images = [];
     },
     setPageName({ name }) {
       this.$v.content.$touch();
@@ -218,7 +219,8 @@ export default {
     resetForm() {
       this.shortCode = '';
       this.content = '';
-      this.imageFile = '';
+      this.images = [];
+      this.attachments = [];
       this.$v.shortCode.$reset();
       this.$v.content.$reset();
     },
@@ -230,8 +232,11 @@ export default {
       const formData = new FormData();
       formData.append('short_code', this.shortCode);
       formData.append('content', this.content);
-      if (this.imageFile) {
-        formData.append('image', this.imageFile);
+
+      if (this.images && this.images.length > 0) {
+        this.images.forEach(file => {
+          formData.append('images[]', file);
+        });
       }
 
       if (this.attachments && this.attachments.length > 0) {

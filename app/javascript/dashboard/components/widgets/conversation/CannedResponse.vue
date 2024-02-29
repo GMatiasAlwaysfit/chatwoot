@@ -32,7 +32,7 @@ export default {
         key: cannedMessage.short_code,
         description: cannedMessage.content,
         image_url: cannedMessage.image_url,
-        image_name: cannedMessage.image_name,
+        images: cannedMessage.images,
         attachments: cannedMessage.attachments,
       }));
     },

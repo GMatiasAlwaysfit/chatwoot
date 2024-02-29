@@ -12,7 +12,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   end
 
   def update
-    @canned_response.image.purge if canned_response_params[:image].nil? && @canned_response.image.attached?
+    @canned_response.images.purge if canned_response_params[:images].nil? && @canned_response.images.attached?
     @canned_response.attachments.purge if canned_response_params[:attachments].nil? && @canned_response.attachments.attached?
 
     @canned_response.update!(canned_response_params)
@@ -31,7 +31,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   end
 
   def canned_response_params
-    params.permit(:short_code, :content, :image, attachments: [])
+    params.permit(:short_code, :content, images: [], attachments: [])
   end
 
   def canned_responses
@@ -46,13 +46,19 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
     canned_responses.map do |response|
       response_data = response.attributes
 
-      if response.image.attached?
-        image_blob = response.image.blob
-        response_data[:image_url] = url_for(response.image)
-        response_data[:image_name] = image_blob.filename.to_s
-        response_data[:image_id] = response.image.id
-        response_data[:image_type] = image_blob.content_type
-      end
+      response_data[:images] = if response.images.attached?
+                                response.images.map do |image|
+                                  image_blob = image.blob
+                                  {
+                                    url: url_for(image),
+                                    name: image_blob.filename.to_s,
+                                    image_id: image.id,
+                                    type: image_blob.content_type
+                                  }
+                                end
+                              else
+                                []
+                              end
 
       response_data[:attachments] = if response.attachments.attached?
                                       response.attachments.map do |attachment|

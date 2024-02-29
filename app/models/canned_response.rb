@@ -18,7 +18,7 @@ class CannedResponse < ApplicationRecord
 
   belongs_to :account
 
-  has_one_attached :image
+  has_many_attached :images
   has_many_attached :attachments
 
   scope :order_by_search, lambda { |search|

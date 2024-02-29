@@ -35,18 +35,20 @@
           </div>
         </div>
         <div class="flex flex-col items-center mt-2">
-          <h2 class="self-start">Imagem</h2>
+          <h2 class="self-start">Imagens</h2>
           <div
-            v-if="imageUrl"
-            class="p-3 mb-3 w-full rounded-md flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+            v-if="images.length > 0"
+            class="p-3 mb-3 w-full rounded-md flex flex-row flex-wrap justify-center item-center mx-auto text-center size-full border border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
           >
-            <img
-              class="p-2 rounded-lg items-center mx-auto text-center h-80"
-              :src="imageUrl"
-              alt="Canned Image"
-            />
+            <div v-for="(file, index) in images" :key="index">
+              <img
+                class="p-2 rounded-md items-center mx-auto text-center max-w-64 max-h-32"
+                :src="file.url"
+                alt="Canned Image"
+              />
+            </div>
           </div>
-          <div v-if="showDeleteButton" class="avatar-delete-btn mb-3">
+          <div v-if="images.length" class="avatar-delete-btn mb-3">
             <woot-button
               type="button"
               color-scheme="alert"
@@ -64,6 +66,7 @@
           type="file"
           label="Imagem do template"
           accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+          multiple
           @change="handleImageUpload"
           @click="onInputClick"
         />
@@ -161,6 +164,7 @@ export default {
       content: this.responseContent || '',
       imageFile: null,
       imageUrl: null,
+      images: [],
       attachments: [],
       addCanned: {
         showLoading: false,
@@ -188,10 +192,13 @@ export default {
       event.target.value = '';
     },
     handleImageUpload(event) {
-      const [file] = event.target.files;
+      const files = event.target.files;
 
-      this.imageFile = file;
-      this.imageUrl = file ? URL.createObjectURL(file) : null;
+      files.forEach(file => {
+        file.url = URL.createObjectURL(file);
+      });
+
+      this.images = Array.from(files);
     },
     handleFileUpload(event) {
       const files = event.target.files;
@@ -206,15 +213,13 @@ export default {
       this.attachments = [];
     },
     async deleteImage() {
-      this.imageFile = null;
-      this.imageUrl = '';
-      this.showAlert(this.$t('PROFILE_SETTINGS.AVATAR_DELETE_SUCCESS'));
+      this.images = [];
     },
     resetForm() {
       this.shortCode = '';
       this.content = '';
-      this.imageFile = '';
-      this.imageUrl = '';
+      this.images = [];
+      this.attachments = [];
       this.$v.shortCode.$reset();
       this.$v.content.$reset();
     },
@@ -226,8 +231,11 @@ export default {
       const formData = new FormData();
       formData.append('short_code', this.shortCode);
       formData.append('content', this.content);
-      if (this.imageFile) {
-        formData.append('image', this.imageFile);
+
+      if (this.images && this.images.length > 0) {
+        this.images.forEach(file => {
+          formData.append('images[]', file);
+        });
       }
 
       if (this.attachments && this.attachments.length > 0) {

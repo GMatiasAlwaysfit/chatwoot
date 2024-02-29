@@ -574,9 +574,14 @@ export default {
 
       this.insertNodeIntoEditor(node, from, this.range.to);
 
-      if (cannedItem.image_url) {
-        await this.convertUrltoFile(cannedItem);
+      if (cannedItem.images.length > 0) {
+        await Promise.all(
+          cannedItem.images.map(async file => {
+            await this.convertUrltoFile(file);
+          })
+        );
       }
+
       if (cannedItem.attachments.length > 0) {
         cannedItem.attachments.forEach(file => {
           this.convertUrltoFile(file);
@@ -587,10 +592,10 @@ export default {
       return false;
     },
     async convertUrltoFile(url) {
-      await fetch(url.image_url || url.url)
+      await fetch(url.url)
         .then(response => response.blob())
         .then(blob => {
-          const file = new File([blob], url.image_name || url.name, {
+          const file = new File([blob], url.name, {
             type: blob.type,
           });
 
