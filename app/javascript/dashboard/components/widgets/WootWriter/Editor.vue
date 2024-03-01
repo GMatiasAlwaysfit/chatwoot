@@ -655,19 +655,6 @@ export default {
         );
       }
     },
-    async uploadCannedImageToStorage(file) {
-      try {
-        const { fileUrl } = await uploadFile(file);
-        if (fileUrl) {
-          this.onImageInsertInEditor(fileUrl);
-        }
-        this.showAlert(this.$t('Imagem do template carregada com sucesso'));
-      } catch (error) {
-        this.showAlert(
-          this.$t('Não foi possível fazer o upload da imagem! Tente novamente')
-        );
-      }
-    },
     onImageInsertInEditor(fileUrl) {
       const { tr } = this.editorView.state;
 
