@@ -60,26 +60,30 @@
             </woot-button>
           </div>
         </div>
-        <input
-          id="file"
-          ref="file"
-          type="file"
-          label="Imagem do template"
-          accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-          multiple
-          @change="handleImageUpload"
-          @click="onInputClick"
-        />
-        <div class="flex flex-col items-center mt-4">
-          <h2 class="self-start">Anexos</h2>
+        <div v-if="images.length == 0">
           <input
-            ref="fileInput"
+            id="file"
+            ref="file"
             type="file"
+            label="Imagem do template"
+            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
             multiple
-            accept="video/*,audio/*,.3gpp,text/csv,text/plain,application/json,application/pdf,text/rtf,application/zip,application/x-7z-compressed application/vnd.rar application/x-tar,application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/vnd.oasis.opendocument.text,application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,"
-            @change="handleFileUpload"
+            @change="handleImageUpload"
             @click="onInputClick"
           />
+        </div>
+        <div class="flex flex-col items-center mt-4">
+          <h2 class="self-start">Anexos</h2>
+          <div v-if="attachments.length == 0" class="self-start">
+            <input
+              ref="fileInput"
+              type="file"
+              multiple
+              accept="video/*,audio/*,.3gpp,text/csv,text/plain,application/json,application/pdf,text/rtf,application/zip,application/x-7z-compressed application/vnd.rar application/x-tar,application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/vnd.oasis.opendocument.text,application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,"
+              @change="handleFileUpload"
+              @click="onInputClick"
+            />
+          </div>
           <div v-if="attachments.length > 0" class="w-full">
             <div v-for="(file, index) in attachments" :key="index">
               <div
@@ -278,5 +282,9 @@ export default {
       @apply text-base;
     }
   }
+}
+
+audio::-webkit-media-controls-enclosure {
+  border-radius: 4px;
 }
 </style>

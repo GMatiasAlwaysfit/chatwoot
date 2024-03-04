@@ -87,13 +87,13 @@
                 v-if="file.type.includes('audio')"
                 class="p-3 mb-3 rounded-md flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
               >
-                <audio controls :src="file.url" />
+                <audio class="rounded-none" controls :src="file.url" />
               </div>
               <div
                 v-else-if="file.type.includes('video')"
                 class="p-3 mb-3 rounded-md items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
               >
-                <video controls :src="file.url" />
+                <video class="rounded-md" controls :src="file.url" />
               </div>
               <div
                 v-else
@@ -290,5 +290,9 @@ export default {
       @apply text-base;
     }
   }
+}
+
+audio::-webkit-media-controls-enclosure {
+  border-radius: 4px;
 }
 </style>
