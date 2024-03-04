@@ -553,7 +553,7 @@ export default {
 
       return false;
     },
-    async insertCannedResponse(cannedItem) {
+    insertCannedResponse(cannedItem) {
       const updatedMessage = replaceVariablesInMessage({
         message: cannedItem.description,
         variables: this.variables,
@@ -574,6 +574,12 @@ export default {
 
       this.insertNodeIntoEditor(node, from, this.range.to);
 
+      this.insertCannedAttachments(cannedItem);
+
+      this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
+      return false;
+    },
+    async insertCannedAttachments(cannedItem) {
       if (cannedItem.images.length > 0) {
         await Promise.all(
           cannedItem.images.map(async file => {
@@ -587,9 +593,6 @@ export default {
           this.convertUrltoFile(file);
         });
       }
-
-      this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
-      return false;
     },
     async convertUrltoFile(url) {
       await fetch(url.url)

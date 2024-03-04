@@ -35,7 +35,7 @@
           <h2 class="self-start">Imagens</h2>
           <div
             v-if="images.length > 0"
-            class="p-3 mb-3 w-full rounded-md flex flex-row flex-wrap justify-center item-center mx-auto text-center size-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+            class="p-3 mb-3 w-full rounded-md flex flex-row flex-wrap justify-center item-center mx-auto text-center size-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
           >
             <div v-for="(file, index) in images" :key="index">
               <img
@@ -51,7 +51,7 @@
               color-scheme="alert"
               variant="hollow"
               size="small"
-              @click="deleteImage"
+              @click="removeImage()"
             >
               {{ images.length > 1 ? 'Remover imagens' : 'Remover imagem' }}
             </woot-button>
@@ -85,19 +85,19 @@
             <div v-for="(file, index) in attachments" :key="index">
               <div
                 v-if="file.type.includes('audio')"
-                class="p-3 mb-3 rounded-md flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+                class="p-3 mb-3 rounded-md flex justify-center items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
               >
                 <audio class="rounded-none" controls :src="file.url" />
               </div>
               <div
                 v-else-if="file.type.includes('video')"
-                class="p-3 mb-3 rounded-md items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+                class="p-3 mb-3 rounded-md items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
               >
                 <video class="rounded-md" controls :src="file.url" />
               </div>
               <div
                 v-else
-                class="p-3 mb-3 rounded-md items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700"
+                class="p-3 mb-3 rounded-md items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
               >
                 <a target="_blank" download :href="file.url">{{ file.name }}</a>
               </div>
@@ -209,7 +209,7 @@ export default {
     removeAttachment() {
       this.attachments = [];
     },
-    async deleteImage() {
+    removeImage() {
       this.images = [];
     },
     setPageName({ name }) {

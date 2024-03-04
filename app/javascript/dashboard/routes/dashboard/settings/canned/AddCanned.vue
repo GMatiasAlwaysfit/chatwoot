@@ -54,7 +54,7 @@
               color-scheme="alert"
               variant="hollow"
               size="small"
-              @click="deleteImage"
+              @click="removeImage()"
             >
               Remover imagem
             </woot-button>
@@ -216,7 +216,7 @@ export default {
     removeAttachment() {
       this.attachments = [];
     },
-    async deleteImage() {
+    removeImage() {
       this.images = [];
     },
     resetForm() {
