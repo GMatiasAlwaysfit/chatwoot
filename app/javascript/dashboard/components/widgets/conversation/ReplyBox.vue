@@ -871,6 +871,11 @@ export default {
       this.hideWhatsappTemplatesModal();
     },
     replaceText(message) {
+      if (message && message.description) {
+        this.insertCannedAttachments(message);
+        message = message.description;
+      }
+
       if (this.sendWithSignature && !this.private) {
         // if signature is enabled, append it to the message
         // appendSignature ensures that the signature is not duplicated
@@ -887,6 +892,38 @@ export default {
         this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
         this.message = updatedMessage;
       }, 100);
+    },
+    async insertCannedAttachments(cannedItem) {
+      if (cannedItem.images.length > 0) {
+        await Promise.all(
+          cannedItem.images.map(async file => {
+            await this.convertUrltoFile(file);
+          })
+        );
+      }
+
+      if (cannedItem.attachments.length > 0) {
+        cannedItem.attachments.forEach(file => {
+          this.convertUrltoFile(file);
+        });
+      }
+    },
+    async convertUrltoFile(url) {
+      await fetch(url.url)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], url.name, {
+            type: blob.type,
+          });
+
+          this.onFileUpload({
+            cannedResponse: true,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            file: file,
+          });
+        });
     },
     setReplyMode(mode = REPLY_EDITOR_MODES.REPLY) {
       const { can_reply: canReply } = this.currentChat;
