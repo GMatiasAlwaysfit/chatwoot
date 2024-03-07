@@ -32,7 +32,13 @@
           </div>
         </div>
         <div class="flex flex-col items-center mt-2">
-          <h2 class="self-start">Imagens</h2>
+          <h2 class="self-start flex justify-center items-center">
+            Imagens
+            <div class="tooltip ml-2">
+              <span>?</span>
+              <span class="tooltiptext">Extensões suportadas: JPEG e PNG</span>
+            </div>
+          </h2>
           <div
             v-if="images.length > 0"
             class="p-3 mb-3 w-full rounded-md flex flex-row flex-wrap justify-center item-center mx-auto text-center size-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
@@ -55,6 +61,24 @@
             >
               {{ images.length > 1 ? 'Remover imagens' : 'Remover imagem' }}
             </woot-button>
+            <input
+              ref="fileImage"
+              type="file"
+              multiple
+              accept="image/png, image/jpeg"
+              style="display: none"
+              @change="handleAddMoreImages"
+            />
+            <woot-button
+              type="button"
+              color-scheme="primary"
+              variant="hollow"
+              size="small"
+              class="ml-1"
+              @click.prevent="$refs.fileImage.click()"
+            >
+              +
+            </woot-button>
           </div>
         </div>
         <div v-if="images.length == 0">
@@ -63,20 +87,29 @@
             ref="file"
             type="file"
             label="Imagem do template"
-            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+            accept="image/png, image/jpeg"
             multiple
             @change="handleImageUpload"
             @click="onInputClick"
           />
         </div>
         <div class="flex flex-col items-center mt-4">
-          <h2 class="self-start">Anexos</h2>
+          <h2 class="self-start flex justify-center items-center">
+            Anexos
+            <div class="tooltip ml-2">
+              <span>?</span>
+              <span class="tooltiptext">
+                Extensões suportadas: arquivos de texto, audio/aac, audio/mp4,
+                audio/mpeg, audio/amr, audio/oga, video/mp4
+              </span>
+            </div>
+          </h2>
           <div v-if="attachments.length == 0" class="self-start">
             <input
               ref="fileInput"
               type="file"
               multiple
-              accept="video/*,audio/*,.3gpp,text/csv,text/plain,application/json,application/pdf,text/rtf,application/zip,application/x-7z-compressed application/vnd.rar application/x-tar,application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/vnd.oasis.opendocument.text,application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.wordprocessingml.document,"
+              accept="audio/aac, audio/mp4, audio/mpeg, audio/amr, audio/ogg, text/plain, application/pdf, application/vnd.ms-powerpoint, application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, video/mp4"
               @change="handleFileUpload"
               @click="onInputClick"
             />
@@ -91,9 +124,9 @@
               </div>
               <div
                 v-else-if="file.type.includes('video')"
-                class="p-3 mb-3 rounded-md items-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
+                class="p-3 mb-3 flex rounded-md items-center justify-center mx-auto text-center size-full max-h-80 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700"
               >
-                <video class="rounded-md" controls :src="file.url" />
+                <video class="rounded-md max-h-72" controls :src="file.url" />
               </div>
               <div
                 v-else
@@ -103,16 +136,35 @@
               </div>
             </div>
           </div>
-          <woot-button
-            v-if="attachments.length"
-            type="button"
-            color-scheme="alert"
-            variant="hollow"
-            size="small"
-            @click.prevent="removeAttachment()"
-          >
-            {{ attachments.length > 1 ? 'Remover anexos' : 'Remover anexo' }}
-          </woot-button>
+          <div v-if="attachments.length">
+            <woot-button
+              type="button"
+              color-scheme="alert"
+              variant="hollow"
+              size="small"
+              @click.prevent="removeAttachment()"
+            >
+              {{ attachments.length > 1 ? 'Remover anexos' : 'Remover anexo' }}
+            </woot-button>
+            <input
+              ref="fileAttachment"
+              type="file"
+              multiple
+              accept="audio/aac, audio/mp4, audio/mpeg, audio/amr, audio/ogg, text/plain, application/pdf, application/vnd.ms-powerpoint, application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, video/mp4"
+              style="display: none"
+              @change="handleAddMoreAttachments"
+            />
+            <woot-button
+              type="button"
+              color-scheme="primary"
+              variant="hollow"
+              class="ml-1"
+              size="small"
+              @click.prevent="$refs.fileAttachment.click()"
+            >
+              +
+            </woot-button>
+          </div>
         </div>
         <div class="flex flex-row justify-end gap-2 py-2 px-0 w-full">
           <woot-submit-button
@@ -185,6 +237,22 @@ export default {
     },
   },
   methods: {
+    handleAddMoreAttachments(event) {
+      const files = event.target.files;
+
+      files.forEach(file => {
+        file.url = URL.createObjectURL(file);
+        this.attachments.push(file);
+      });
+    },
+    handleAddMoreImages(event) {
+      const files = event.target.files;
+
+      files.forEach(file => {
+        file.url = URL.createObjectURL(file);
+        this.images.push(file);
+      });
+    },
     onInputClick(event) {
       event.target.value = '';
     },
@@ -208,9 +276,51 @@ export default {
     },
     removeAttachment() {
       this.attachments = [];
+      const formData = new FormData();
+      formData.append('short_code', this.shortCode);
+      formData.append('content', this.content);
+
+      const filteredImageFiles = this.images.filter(file => file.lastModified);
+
+      if (
+        this.images &&
+        this.images.length > 0 &&
+        filteredImageFiles.length === 0
+      ) {
+        formData.append('no_image_alteration', true);
+        formData.append('images[]', '');
+      } else if (this.images && this.images.length > 0) {
+        filteredImageFiles.forEach(file => {
+          formData.append('images[]', file);
+        });
+      }
+
+      this.$store.dispatch('updateCannedResponse', { id: this.id, formData });
     },
     removeImage() {
       this.images = [];
+      const formData = new FormData();
+      formData.append('short_code', this.shortCode);
+      formData.append('content', this.content);
+
+      const filteredAttachmentFiles = this.attachments.filter(
+        file => file.lastModified
+      );
+
+      if (
+        this.attachments &&
+        this.attachments.length > 0 &&
+        filteredAttachmentFiles.length === 0
+      ) {
+        formData.append('no_attachment_change', true);
+        formData.append('attachments[]', '');
+      } else if (this.attachments && this.attachments.length > 0) {
+        filteredAttachmentFiles.forEach(file => {
+          formData.append('attachments[]', file);
+        });
+      }
+
+      this.$store.dispatch('updateCannedResponse', { id: this.id, formData });
     },
     setPageName({ name }) {
       this.$v.content.$touch();
@@ -233,24 +343,34 @@ export default {
       formData.append('short_code', this.shortCode);
       formData.append('content', this.content);
 
-      if (this.images && this.images.length > 0 && this.images[0].image_id) {
+      const filteredImageFiles = this.images.filter(file => file.lastModified);
+
+      if (
+        this.images &&
+        this.images.length > 0 &&
+        filteredImageFiles.length === 0
+      ) {
         formData.append('no_image_alteration', true);
         formData.append('images[]', '');
       } else if (this.images && this.images.length > 0) {
-        this.images.forEach(file => {
+        filteredImageFiles.forEach(file => {
           formData.append('images[]', file);
         });
       }
 
+      const filteredAttachmentFiles = this.attachments.filter(
+        file => file.lastModified
+      );
+
       if (
         this.attachments &&
         this.attachments.length > 0 &&
-        this.attachments[0].attachment_id
+        filteredAttachmentFiles.length === 0
       ) {
         formData.append('no_attachment_change', true);
         formData.append('attachments[]', '');
       } else if (this.attachments && this.attachments.length > 0) {
-        this.attachments.forEach(file => {
+        filteredAttachmentFiles.forEach(file => {
           formData.append('attachments[]', file);
         });
       }
@@ -294,5 +414,54 @@ export default {
 
 audio::-webkit-media-controls-enclosure {
   border-radius: 4px;
+}
+.tooltip {
+  position: relative;
+  border: 1px solid black;
+  width: 15px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tooltip text */
+.tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

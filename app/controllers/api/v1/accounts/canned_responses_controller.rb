@@ -29,7 +29,6 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   def handle_images_update
     if canned_response_params.key?(:images)
       if canned_response_params[:images].present? && !params.key?(:no_image_alteration)
-        @canned_response.images.purge
         @canned_response.images.attach(canned_response_params[:images])
       end
       canned_response_params.delete(:images)
@@ -41,7 +40,6 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   def handle_attachments_update
     if canned_response_params.key?(:attachments)
       if canned_response_params[:attachments].present? && !params.key?(:no_attachment_change)
-        @canned_response.attachments.purge
         @canned_response.attachments.attach(canned_response_params[:attachments])
       end
       canned_response_params.delete(:attachments)
