@@ -15,7 +15,8 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
     handle_images_update
     handle_attachments_update
 
-    @canned_response.update!(canned_response_params.except(:no_image_alteration, :no_attachment_change, :images, :attachments))
+    @canned_response.update!(canned_response_params.except(:no_image_alteration, :no_attachment_change, :images, :attachments, :prune_image,
+                                                           :prune_attachment))
     render json: @canned_response
   end
 
@@ -29,7 +30,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   def handle_images_update
     if canned_response_params.key?(:images)
       if canned_response_params[:images].present? && !params.key?(:no_image_alteration)
-        @canned_response.images.purge
+        @canned_response.images.purge if params.key?(:prune_image)
         @canned_response.images.attach(canned_response_params[:images])
       end
       canned_response_params.delete(:images)
@@ -41,7 +42,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   def handle_attachments_update
     if canned_response_params.key?(:attachments)
       if canned_response_params[:attachments].present? && !params.key?(:no_attachment_change)
-        @canned_response.attachments.purge
+        @canned_response.attachments.purge if params.key?(:prune_attachment)
         @canned_response.attachments.attach(canned_response_params[:attachments])
       end
       canned_response_params.delete(:attachments)
@@ -55,7 +56,7 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
   end
 
   def canned_response_params
-    params.permit(:short_code, :content, :no_image_alteration, :no_attachment_change, images: [], attachments: [])
+    params.permit(:short_code, :content, :no_image_alteration, :prune_image, :prune_attachment, :no_attachment_change, images: [], attachments: [])
   end
 
   def canned_responses
