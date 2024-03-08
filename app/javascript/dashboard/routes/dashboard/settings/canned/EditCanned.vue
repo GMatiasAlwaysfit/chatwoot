@@ -61,24 +61,6 @@
             >
               {{ images.length > 1 ? 'Remover imagens' : 'Remover imagem' }}
             </woot-button>
-            <input
-              ref="fileImage"
-              type="file"
-              multiple
-              accept="image/png, image/jpeg"
-              style="display: none"
-              @change="handleAddMoreImages"
-            />
-            <woot-button
-              type="button"
-              color-scheme="primary"
-              variant="hollow"
-              size="small"
-              class="ml-1"
-              @click.prevent="$refs.fileImage.click()"
-            >
-              +
-            </woot-button>
           </div>
         </div>
         <div v-if="images.length == 0">
@@ -145,24 +127,6 @@
               @click.prevent="removeAttachment()"
             >
               {{ attachments.length > 1 ? 'Remover anexos' : 'Remover anexo' }}
-            </woot-button>
-            <input
-              ref="fileAttachment"
-              type="file"
-              multiple
-              accept="audio/aac, audio/mp4, audio/mpeg, audio/amr, audio/ogg, text/plain, application/pdf, application/vnd.ms-powerpoint, application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, video/mp4"
-              style="display: none"
-              @change="handleAddMoreAttachments"
-            />
-            <woot-button
-              type="button"
-              color-scheme="primary"
-              variant="hollow"
-              class="ml-1"
-              size="small"
-              @click.prevent="$refs.fileAttachment.click()"
-            >
-              +
             </woot-button>
           </div>
         </div>
@@ -237,22 +201,6 @@ export default {
     },
   },
   methods: {
-    handleAddMoreAttachments(event) {
-      const files = event.target.files;
-
-      files.forEach(file => {
-        file.url = URL.createObjectURL(file);
-        this.attachments.push(file);
-      });
-    },
-    handleAddMoreImages(event) {
-      const files = event.target.files;
-
-      files.forEach(file => {
-        file.url = URL.createObjectURL(file);
-        this.images.push(file);
-      });
-    },
     onInputClick(event) {
       event.target.value = '';
     },
@@ -276,51 +224,9 @@ export default {
     },
     removeAttachment() {
       this.attachments = [];
-      const formData = new FormData();
-      formData.append('short_code', this.shortCode);
-      formData.append('content', this.content);
-
-      const filteredImageFiles = this.images.filter(file => file.lastModified);
-
-      if (
-        this.images &&
-        this.images.length > 0 &&
-        filteredImageFiles.length === 0
-      ) {
-        formData.append('no_image_alteration', true);
-        formData.append('images[]', '');
-      } else if (this.images && this.images.length > 0) {
-        filteredImageFiles.forEach(file => {
-          formData.append('images[]', file);
-        });
-      }
-
-      this.$store.dispatch('updateCannedResponse', { id: this.id, formData });
     },
     removeImage() {
       this.images = [];
-      const formData = new FormData();
-      formData.append('short_code', this.shortCode);
-      formData.append('content', this.content);
-
-      const filteredAttachmentFiles = this.attachments.filter(
-        file => file.lastModified
-      );
-
-      if (
-        this.attachments &&
-        this.attachments.length > 0 &&
-        filteredAttachmentFiles.length === 0
-      ) {
-        formData.append('no_attachment_change', true);
-        formData.append('attachments[]', '');
-      } else if (this.attachments && this.attachments.length > 0) {
-        filteredAttachmentFiles.forEach(file => {
-          formData.append('attachments[]', file);
-        });
-      }
-
-      this.$store.dispatch('updateCannedResponse', { id: this.id, formData });
     },
     setPageName({ name }) {
       this.$v.content.$touch();

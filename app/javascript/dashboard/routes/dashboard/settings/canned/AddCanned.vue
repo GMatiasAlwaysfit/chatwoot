@@ -64,24 +64,6 @@
             >
               {{ images.length > 1 ? 'Remover imagens' : 'Remover imagem' }}
             </woot-button>
-            <input
-              ref="fileImage"
-              type="file"
-              multiple
-              accept="image/png, image/jpeg"
-              style="display: none"
-              @change="handleAddMoreImages"
-            />
-            <woot-button
-              type="button"
-              color-scheme="primary"
-              variant="hollow"
-              class="ml-1"
-              size="small"
-              @click.prevent="$refs.fileImage.click()"
-            >
-              +
-            </woot-button>
           </div>
         </div>
         <div v-if="images.length == 0">
@@ -149,23 +131,6 @@
               @click.prevent="removeAttachment()"
             >
               {{ attachments.length > 1 ? 'Remover anexos' : 'Remover anexo' }}
-            </woot-button>
-            <input
-              ref="fileAttachment"
-              type="file"
-              multiple
-              accept="audio/aac, audio/mp4, audio/mpeg, audio/amr, audio/ogg, text/plain, application/pdf, application/vnd.ms-powerpoint, application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, video/mp4"
-              style="display: none"
-              @change="handleAddMoreAttachments"
-            />
-            <woot-button
-              type="button"
-              color-scheme="primary"
-              variant="hollow"
-              size="small"
-              @click.prevent="$refs.fileAttachment.click()"
-            >
-              +
             </woot-button>
           </div>
         </div>
@@ -244,22 +209,6 @@ export default {
     },
   },
   methods: {
-    handleAddMoreAttachments(event) {
-      const files = event.target.files;
-
-      files.forEach(file => {
-        file.url = URL.createObjectURL(file);
-        this.attachments.push(file);
-      });
-    },
-    handleAddMoreImages(event) {
-      const files = event.target.files;
-
-      files.forEach(file => {
-        file.url = URL.createObjectURL(file);
-        this.images.push(file);
-      });
-    },
     onInputClick(event) {
       event.target.value = '';
     },
