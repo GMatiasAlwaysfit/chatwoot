@@ -31,6 +31,8 @@ RUN apk update && apk add --no-cache \
   && mkdir -p /var/app \
   && gem install bundler
 
+RUN git init --bare /var/app
+
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
