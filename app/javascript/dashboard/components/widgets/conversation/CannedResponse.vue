@@ -31,6 +31,9 @@ export default {
         label: cannedMessage.short_code,
         key: cannedMessage.short_code,
         description: cannedMessage.content,
+        image_url: cannedMessage.image_url,
+        images: cannedMessage.images,
+        attachments: cannedMessage.attachments,
       }));
     },
   },
@@ -47,7 +50,7 @@ export default {
       this.$store.dispatch('getCannedResponse', { searchKey: this.searchKey });
     },
     handleMentionClick(item = {}) {
-      this.$emit('click', item.description);
+      this.$emit('click', item);
     },
   },
 };

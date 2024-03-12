@@ -555,7 +555,7 @@ export default {
     },
     insertCannedResponse(cannedItem) {
       const updatedMessage = replaceVariablesInMessage({
-        message: cannedItem,
+        message: cannedItem.description,
         variables: this.variables,
       });
 
@@ -574,8 +574,36 @@ export default {
 
       this.insertNodeIntoEditor(node, from, this.range.to);
 
+      this.insertCannedAttachments(cannedItem);
+
       this.$track(CONVERSATION_EVENTS.INSERTED_A_CANNED_RESPONSE);
       return false;
+    },
+    async insertCannedAttachments(cannedItem) {
+      if (cannedItem.images.length > 0) {
+        await Promise.all(
+          cannedItem.images.map(async file => {
+            await this.convertUrltoFile(file);
+          })
+        );
+      }
+
+      if (cannedItem.attachments.length > 0) {
+        cannedItem.attachments.forEach(file => {
+          this.convertUrltoFile(file);
+        });
+      }
+    },
+    async convertUrltoFile(url) {
+      await fetch(url.url)
+        .then(response => response.blob())
+        .then(blob => {
+          const file = new File([blob], url.name, {
+            type: blob.type,
+          });
+
+          this.$emit('get-selected-canned-response', file);
+        });
     },
     insertVariable(variable) {
       if (!this.editorView) {

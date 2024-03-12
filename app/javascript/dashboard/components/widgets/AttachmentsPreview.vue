@@ -67,7 +67,7 @@ export default {
     },
     isTypeAudio(file) {
       const type = file.content_type || file.type;
-      return type.includes('audio');
+      return file.cannedResponse ? false : type.includes('audio');
     },
     fileName(file) {
       return file.filename || file.name;
