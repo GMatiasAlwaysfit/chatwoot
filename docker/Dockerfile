@@ -31,7 +31,7 @@ RUN apk update && apk add --no-cache \
   && mkdir -p /var/app \
   && gem install bundler
 
-RUN git init --bare /var/app
+RUN git init --bare
 
 WORKDIR /app
 
@@ -65,8 +65,8 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   && rm -rf spec node_modules tmp/cache; \
   fi
 
-# Generate .git_sha file with current commit hash
-RUN git rev-parse HEAD > /app/.git_sha
+# Execute the generate-commit-hash and get the result from stdout
+RUN ./generate-commit-hash.sh > /app/.git_sha
 
 # Remove unnecessary files
 RUN rm -rf /gems/ruby/3.2.0/cache/*.gem \
