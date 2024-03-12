@@ -31,8 +31,6 @@ RUN apk update && apk add --no-cache \
   && mkdir -p /var/app \
   && gem install bundler
 
-RUN git init --bare
-
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
@@ -51,6 +49,7 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 COPY package.json yarn.lock ./
+RUN git init --bare
 RUN yarn install
 
 COPY . /app
