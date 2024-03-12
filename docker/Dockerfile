@@ -18,6 +18,8 @@ ENV NODE_OPTIONS ${NODE_OPTIONS}
 
 ENV BUNDLE_PATH="/gems"
 
+RUN apk add git
+
 RUN apk update && apk add --no-cache \
   openssl \
   tar \
@@ -27,7 +29,6 @@ RUN apk update && apk add --no-cache \
   postgresql-client \
   nodejs-current \
   yarn \
-  git \
   && mkdir -p /var/app \
   && gem install bundler
 
