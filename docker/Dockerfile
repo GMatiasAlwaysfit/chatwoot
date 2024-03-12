@@ -49,8 +49,6 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 COPY package.json yarn.lock ./
-# RUN cd ../ && git init
-RUN git init
 RUN yarn install
 
 COPY . /app
