@@ -49,6 +49,7 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 COPY package.json yarn.lock ./
+# RUN cd ../ && git init
 RUN git init
 RUN yarn install
 
@@ -65,7 +66,7 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 # Execute the generate-commit-hash and get the result from stdout
-RUN ./generate-commit-hash.sh > /app/.git_sha
+RUN git rev-parse HEAD > /app/.git_sha
 
 # Remove unnecessary files
 RUN rm -rf /gems/ruby/3.2.0/cache/*.gem \
