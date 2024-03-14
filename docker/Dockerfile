@@ -116,4 +116,8 @@ COPY --from=pre-builder /app/.git_sha /app/.git_sha
 
 WORKDIR /app
 
+# docker exec -it <chatwoot_container_id> bundle exec rails db:create db:migrate
+
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+
 EXPOSE 3000
