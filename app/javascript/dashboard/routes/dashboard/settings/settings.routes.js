@@ -17,6 +17,7 @@ import profile from './profile/profile.routes';
 import reports from './reports/reports.routes';
 import store from '../../../store';
 import teams from './teams/teams.routes';
+import sla from './sla/sla.routes';
 
 export default {
   routes: [
@@ -40,6 +41,7 @@ export default {
     ...billing.routes,
     ...campaigns.routes,
     ...canned.routes,
+    ...sla.routes,
     ...inbox.routes,
     ...integrationapps.routes,
     ...integrations.routes,
