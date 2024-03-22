@@ -74,12 +74,10 @@
         </table>
       </div>
     </div>
-    <!-- Add Agent -->
     <woot-modal :show.sync="showAddPopup" :on-close="hideAddPopup">
       <add-sla :on-close="hideAddPopup" />
     </woot-modal>
 
-    <!-- Edit Canned Response -->
     <woot-modal :show.sync="showEditPopup" :on-close="hideEditPopup">
       <edit-sla
         v-if="showEditPopup"
