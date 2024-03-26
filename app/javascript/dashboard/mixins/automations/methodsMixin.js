@@ -27,6 +27,7 @@ export default {
       inboxes: 'inboxes/getInboxes',
       labels: 'labels/getLabels',
       teams: 'teams/getTeams',
+      slas: 'sla/getSla',
     }),
     booleanFilterOptions() {
       return [
@@ -257,8 +258,8 @@ export default {
       };
     },
     getActionDropdownValues(type) {
-      const { agents, labels, teams } = this;
-      return getActionOptions({ agents, labels, teams, languages, type });
+      const { agents, labels, teams, slas } = this;
+      return getActionOptions({ agents, labels, teams, languages, type, slas });
     },
     manifestCustomAttributes() {
       const conversationCustomAttributesRaw = this.$store.getters[
