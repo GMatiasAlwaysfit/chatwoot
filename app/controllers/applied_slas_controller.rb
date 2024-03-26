@@ -1,0 +1,2 @@
+class AppliedSlasController < ApplicationController
+end

@@ -17,8 +17,9 @@
 #  index_slas_on_account_id  (account_id)
 #
 class Sla < ApplicationRecord
-  validates_uniqueness_of :name, scope: :account_id
+  validates :name, uniqueness: { scope: :account_id }
 
   belongs_to :account
   has_many :conversations, dependent: :nullify
+  has_many :applied_slas, dependent: :destroy
 end
