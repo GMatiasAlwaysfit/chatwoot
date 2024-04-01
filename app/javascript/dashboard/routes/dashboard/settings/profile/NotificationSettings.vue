@@ -1,26 +1,24 @@
 <template>
   <div id="profile-settings-notifications">
-    <div
-      class="profile--settings--row text-black-900 dark:text-slate-300 flex items-center"
-    >
-      <div class="w-1/4">
-        <h4 class="text-lg text-black-900 dark:text-slate-200">
+    <div class="profile--settings--row text-black-900 dark:text-slate-300 row">
+      <div class="columns small-3">
+        <h4 class="block-title text-black-900 dark:text-slate-200">
           {{ $t('PROFILE_SETTINGS.FORM.AUDIO_NOTIFICATIONS_SECTION.TITLE') }}
         </h4>
         <p>
           {{ $t('PROFILE_SETTINGS.FORM.AUDIO_NOTIFICATIONS_SECTION.NOTE') }}
         </p>
       </div>
-      <div class="w-[45%] p-4">
-        <div class="mb-4">
-          <span class="text-sm notification-label">
+      <div class="columns small-9">
+        <div class="notification-items--wrapper">
+          <span class="text-block-title notification-label">
             {{
               $t(
                 'PROFILE_SETTINGS.FORM.AUDIO_NOTIFICATIONS_SECTION.ALERT_TYPE.TITLE'
               )
             }}
           </span>
-          <div class="flex items-center gap-2 mb-1">
+          <div>
             <input
               id="audio_enable_alert_none"
               v-model="enableAudioAlerts"
@@ -37,7 +35,7 @@
               }}
             </label>
           </div>
-          <div class="flex items-center gap-2 mb-1">
+          <div>
             <input
               id="audio_enable_alert_mine"
               v-model="enableAudioAlerts"
@@ -54,7 +52,7 @@
               }}
             </label>
           </div>
-          <div class="flex items-center gap-2 mb-1">
+          <div>
             <input
               id="audio_enable_alert_all"
               v-model="enableAudioAlerts"
@@ -72,8 +70,8 @@
             </label>
           </div>
         </div>
-        <div class="mb-4">
-          <span class="text-sm notification-label">
+        <div class="notification-items--wrapper">
+          <span class="text-block-title notification-label">
             {{
               $t(
                 'PROFILE_SETTINGS.FORM.AUDIO_NOTIFICATIONS_SECTION.DEFAULT_TONE.TITLE'
@@ -83,7 +81,7 @@
           <div>
             <select
               v-model="notificationTone"
-              class="tone-selector mb-0"
+              class="tone-selector"
               @change="handleAudioToneChange"
             >
               <option
@@ -96,15 +94,15 @@
             </select>
           </div>
         </div>
-        <div class="mb-1">
-          <span class="text-sm notification-label">
+        <div class="notification-items--wrapper">
+          <span class="text-block-title notification-label">
             {{
               $t(
                 'PROFILE_SETTINGS.FORM.AUDIO_NOTIFICATIONS_SECTION.CONDITIONS.TITLE'
               )
             }}
           </span>
-          <div class="flex items-center gap-2 mb-1">
+          <div>
             <input
               id="audio_alert_when_tab_is_inactive"
               v-model="playAudioWhenTabIsInactive"
@@ -121,7 +119,7 @@
               }}
             </label>
           </div>
-          <div class="flex items-center gap-2 mb-1">
+          <div>
             <input
               id="audio_alert_until_all_conversations_are_read"
               v-model="alertIfUnreadConversationExist"
@@ -141,19 +139,17 @@
         </div>
       </div>
     </div>
-    <div
-      class="profile--settings--row text-black-900 dark:text-slate-300 flex items-center"
-    >
-      <div class="w-1/4">
-        <h4 class="text-lg text-black-900 dark:text-slate-200">
+    <div class="profile--settings--row text-black-900 dark:text-slate-300 row">
+      <div class="columns small-3">
+        <h4 class="block-title text-black-900 dark:text-slate-200">
           {{ $t('PROFILE_SETTINGS.FORM.EMAIL_NOTIFICATIONS_SECTION.TITLE') }}
         </h4>
         <p>
           {{ $t('PROFILE_SETTINGS.FORM.EMAIL_NOTIFICATIONS_SECTION.NOTE') }}
         </p>
       </div>
-      <div class="w-[45%] p-4">
-        <div class="flex items-center gap-2 mb-1">
+      <div class="columns small-9">
+        <div>
           <input
             v-model="selectedEmailFlags"
             class="notification--checkbox"
@@ -170,7 +166,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedEmailFlags"
             class="notification--checkbox"
@@ -187,7 +183,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedEmailFlags"
             class="notification--checkbox"
@@ -204,7 +200,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedEmailFlags"
             class="notification--checkbox"
@@ -220,7 +216,7 @@
             }}
           </label>
         </div>
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedEmailFlags"
             class="notification--checkbox"
@@ -236,67 +232,19 @@
             }}
           </label>
         </div>
-        <div v-if="isSLAEnabled" class="flex items-center gap-2 mb-1">
-          <input
-            v-model="selectedEmailFlags"
-            class="notification--checkbox"
-            type="checkbox"
-            value="email_sla_missed_first_response"
-            @input="handleEmailInput"
-          />
-          <label for="sla_missed_first_response">
-            {{
-              $t(
-                'PROFILE_SETTINGS.FORM.EMAIL_NOTIFICATIONS_SECTION.SLA_MISSED_FIRST_RESPONSE'
-              )
-            }}
-          </label>
-        </div>
-        <div v-if="isSLAEnabled" class="flex items-center gap-2 mb-1">
-          <input
-            v-model="selectedEmailFlags"
-            class="notification--checkbox"
-            type="checkbox"
-            value="email_sla_missed_next_response"
-            @input="handleEmailInput"
-          />
-          <label for="sla_missed_next_response">
-            {{
-              $t(
-                'PROFILE_SETTINGS.FORM.EMAIL_NOTIFICATIONS_SECTION.SLA_MISSED_NEXT_RESPONSE'
-              )
-            }}
-          </label>
-        </div>
-        <div v-if="isSLAEnabled" class="flex items-center gap-2 mb-1">
-          <input
-            v-model="selectedEmailFlags"
-            class="notification--checkbox"
-            type="checkbox"
-            value="email_sla_missed_resolution"
-            @input="handleEmailInput"
-          />
-          <label for="sla_missed_resolution">
-            {{
-              $t(
-                'PROFILE_SETTINGS.FORM.EMAIL_NOTIFICATIONS_SECTION.SLA_MISSED_RESOLUTION'
-              )
-            }}
-          </label>
-        </div>
       </div>
     </div>
     <div
       v-if="vapidPublicKey && hasPushAPISupport"
-      class="profile--settings--row text-black-900 dark:text-slate-300 flex items-center push-row"
+      class="profile--settings--row text-black-900 dark:text-slate-300 row push-row"
     >
-      <div class="w-1/4">
-        <h4 class="text-lg text-black-900 dark:text-slate-200">
+      <div class="columns small-3">
+        <h4 class="block-title text-black-900 dark:text-slate-200">
           {{ $t('PROFILE_SETTINGS.FORM.PUSH_NOTIFICATIONS_SECTION.TITLE') }}
         </h4>
         <p>{{ $t('PROFILE_SETTINGS.FORM.PUSH_NOTIFICATIONS_SECTION.NOTE') }}</p>
       </div>
-      <div class="w-[45%] p-4">
+      <div class="columns small-9">
         <p v-if="hasEnabledPushPermissions">
           {{
             $t(
@@ -316,7 +264,7 @@
             @click="onRequestPermissions"
           />
         </div>
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedPushFlags"
             class="notification--checkbox"
@@ -333,7 +281,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedPushFlags"
             class="notification--checkbox"
@@ -350,7 +298,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedPushFlags"
             class="notification--checkbox"
@@ -367,7 +315,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedPushFlags"
             class="notification--checkbox"
@@ -384,7 +332,7 @@
           </label>
         </div>
 
-        <div class="flex items-center gap-2 mb-1">
+        <div>
           <input
             v-model="selectedPushFlags"
             class="notification--checkbox"
@@ -396,57 +344,6 @@
             {{
               $t(
                 'PROFILE_SETTINGS.FORM.PUSH_NOTIFICATIONS_SECTION.PARTICIPATING_CONVERSATION_NEW_MESSAGE'
-              )
-            }}
-          </label>
-        </div>
-
-        <div v-if="isSLAEnabled" class="flex items-center gap-2 mb-1">
-          <input
-            v-model="selectedPushFlags"
-            class="notification--checkbox"
-            type="checkbox"
-            value="push_sla_missed_first_response"
-            @input="handlePushInput"
-          />
-          <label for="sla_missed_first_response">
-            {{
-              $t(
-                'PROFILE_SETTINGS.FORM.PUSH_NOTIFICATIONS_SECTION.SLA_MISSED_FIRST_RESPONSE'
-              )
-            }}
-          </label>
-        </div>
-
-        <div v-if="isSLAEnabled" class="flex items-center gap-2 mb-1">
-          <input
-            v-model="selectedPushFlags"
-            class="notification--checkbox"
-            type="checkbox"
-            value="push_sla_missed_next_response"
-            @input="handlePushInput"
-          />
-          <label for="sla_missed_next_response">
-            {{
-              $t(
-                'PROFILE_SETTINGS.FORM.PUSH_NOTIFICATIONS_SECTION.SLA_MISSED_NEXT_RESPONSE'
-              )
-            }}
-          </label>
-        </div>
-
-        <div v-if="isSLAEnabled" class="flex items-center gap-2 mb-1">
-          <input
-            v-model="selectedPushFlags"
-            class="notification--checkbox"
-            type="checkbox"
-            value="push_sla_missed_resolution"
-            @input="handlePushInput"
-          />
-          <label for="sla_missed_resolution">
-            {{
-              $t(
-                'PROFILE_SETTINGS.FORM.PUSH_NOTIFICATIONS_SECTION.SLA_MISSED_RESOLUTION'
               )
             }}
           </label>
@@ -466,7 +363,6 @@ import {
   requestPushPermissions,
   verifyServiceWorkerExistence,
 } from '../../../../helper/pushHelper';
-import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 export default {
   mixins: [alertMixin, configMixin, uiSettingsMixin],
@@ -493,17 +389,12 @@ export default {
   },
   computed: {
     ...mapGetters({
-      accountId: 'getCurrentAccountId',
       emailFlags: 'userNotificationSettings/getSelectedEmailFlags',
       pushFlags: 'userNotificationSettings/getSelectedPushFlags',
       uiSettings: 'getUISettings',
-      isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
     }),
     hasPushAPISupport() {
       return !!('Notification' in window);
-    },
-    isSLAEnabled() {
-      return this.isFeatureEnabledonAccount(this.accountId, FEATURE_FLAGS.SLA);
     },
   },
   watch: {
@@ -632,6 +523,10 @@ export default {
 
 .push-notification--button {
   margin-bottom: var(--space-one);
+}
+
+.notification-items--wrapper {
+  margin-bottom: var(--space-smaller);
 }
 
 .notification-label {

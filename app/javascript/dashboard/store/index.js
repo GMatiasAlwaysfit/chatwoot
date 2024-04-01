@@ -38,7 +38,6 @@ import macros from './modules/macros';
 import notifications from './modules/notifications';
 import portals from './modules/helpCenterPortals';
 import reports from './modules/reports';
-import sla from './modules/sla';
 import teamMembers from './modules/teamMembers';
 import teams from './modules/teams';
 import userNotificationSettings from './modules/userNotificationSettings';
@@ -110,7 +109,6 @@ export default new Vuex.Store({
     userNotificationSettings,
     webhooks,
     draftMessages,
-    sla,
   },
   plugins,
 });

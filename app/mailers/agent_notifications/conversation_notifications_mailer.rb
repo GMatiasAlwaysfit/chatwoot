@@ -61,10 +61,7 @@ class AgentNotifications::ConversationNotificationsMailer < ApplicationMailer
                   user: @agent,
                   conversation: @conversation,
                   inbox: @conversation.inbox,
-                  message: @message,
-                  sla_policy: @sla_policy
+                  message: @message
                 })
   end
 end
-
-AgentNotifications::ConversationNotificationsMailer.include_mod_with('AgentNotifications::ConversationNotificationsMailer')

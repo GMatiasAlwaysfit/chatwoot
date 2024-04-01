@@ -50,9 +50,6 @@ module Reauthorizable
       mailer.whatsapp_disconnect(inbox).deliver_later
     when 'Channel::Email'
       mailer.email_disconnect(inbox).deliver_later
-    when 'AutomationRule'
-      update!(active: false)
-      mailer.automation_rule_disabled(self).deliver_later
     end
   end
 

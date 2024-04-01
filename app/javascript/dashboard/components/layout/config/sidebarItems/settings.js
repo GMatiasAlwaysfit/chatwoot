@@ -39,7 +39,6 @@ const settings = accountId => ({
     'settings_teams_finish',
     'settings_teams_list',
     'settings_teams_new',
-    'sla_list',
   ],
   menuItems: [
     {
@@ -157,15 +156,6 @@ const settings = accountId => ({
       toState: frontendURL(`accounts/${accountId}/settings/audit-log/list`),
       toStateName: 'auditlogs_list',
       featureFlag: FEATURE_FLAGS.AUDIT_LOGS,
-      beta: true,
-    },
-    {
-      icon: 'document-list-clock',
-      label: 'SLA',
-      hasSubMenu: false,
-      toState: frontendURL(`accounts/${accountId}/settings/sla/list`),
-      toStateName: 'sla_list',
-      featureFlag: FEATURE_FLAGS.SLA,
       beta: true,
     },
   ],
