@@ -28,6 +28,7 @@ RUN apk update && apk add --no-cache \
   nodejs-current \
   yarn \
   git \
+  vim \
   && mkdir -p /var/app \
   && gem install bundler
 
@@ -49,7 +50,7 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 COPY package.json yarn.lock ./
-RUN yarn install
+RUN yarn install --ignore-engines
 
 COPY . /app
 
