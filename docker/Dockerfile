@@ -49,6 +49,8 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   else bundle install -j 4 -r 3; \
   fi
 
+RUN echo "process.setMaxListeners(0);" >> /usr/local/bin/node
+
 COPY package.json yarn.lock ./
 RUN yarn install --ignore-engines
 
