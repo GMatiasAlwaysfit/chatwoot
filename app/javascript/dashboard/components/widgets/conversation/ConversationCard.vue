@@ -88,6 +88,7 @@
       </div>
       <card-labels :conversation-id="chat.id" />
     </div>
+    <sla-card v-if="hasSlaAttached && chat.status == 'open'" :chat="chat" />
     <woot-context-menu
       v-if="showContextMenu"
       ref="menu"
@@ -125,6 +126,7 @@ import alertMixin from 'shared/mixins/alertMixin';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
 import CardLabels from './conversationCardComponents/CardLabels.vue';
 import PriorityMark from './PriorityMark.vue';
+import SlaCard from './components/SlaCard.vue';
 
 export default {
   components: {
@@ -135,6 +137,7 @@ export default {
     TimeAgo,
     MessagePreview,
     PriorityMark,
+    SlaCard,
   },
 
   mixins: [inboxMixin, timeMixin, conversationMixin, alertMixin],
@@ -251,6 +254,9 @@ export default {
     inboxName() {
       const stateInbox = this.inbox;
       return stateInbox.name || '';
+    },
+    hasSlaAttached() {
+      return this.chat?.sla_id;
     },
   },
   methods: {

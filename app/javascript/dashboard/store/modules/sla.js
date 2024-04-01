@@ -21,6 +21,9 @@ const getters = {
   getUIFlags(_state) {
     return _state.uiFlags;
   },
+  getSlaById: _state => id => {
+    return _state.records.find(item => item.id === id);
+  },
 };
 
 const actions = {

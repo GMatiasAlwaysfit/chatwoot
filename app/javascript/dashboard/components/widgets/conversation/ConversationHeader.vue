@@ -69,6 +69,7 @@
         class="header-actions-wrap items-center flex flex-row flex-grow justify-end mt-3 lg:mt-0"
         :class="{ 'justify-end': isContactPanelOpen }"
       >
+        <sla-card v-if="hasSlaAttached && chat.status == 'open'" :chat="chat" />
         <more-actions :conversation-id="currentChat.id" />
       </div>
     </div>
@@ -87,6 +88,7 @@ import Thumbnail from '../Thumbnail.vue';
 import wootConstants from 'dashboard/constants/globals';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { conversationReopenTime } from 'dashboard/helper/snoozeHelpers';
+import SlaCard from './components/SlaCard.vue';
 
 export default {
   components: {
@@ -94,6 +96,7 @@ export default {
     InboxName,
     MoreActions,
     Thumbnail,
+    SlaCard,
   },
   mixins: [inboxMixin, agentMixin, eventListenerMixins],
   props: {
@@ -167,6 +170,9 @@ export default {
     },
     hasMultipleInboxes() {
       return this.$store.getters['inboxes/getInboxes'].length > 1;
+    },
+    hasSlaAttached() {
+      return this.chat?.sla_id;
     },
   },
 

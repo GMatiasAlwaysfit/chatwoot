@@ -6,6 +6,7 @@ class SlaJob < ApplicationJob
       process_sla(applied_sla)
 
       return unless applied_sla.conversation.resolved?
+
       handle_sla_hit(applied_sla) if applied_sla.status == 'active'
     end
   end
@@ -25,7 +26,7 @@ class SlaJob < ApplicationJob
 
   def check_max_time_limit(applied_sla, conversation, sla)
     max_time = conversation.created_at.to_i + sla.max_time.to_i
-    
+
     return if exceeded_max_time_limit?(max_time)
 
     handle_sla_miss(applied_sla)
