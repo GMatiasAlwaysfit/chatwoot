@@ -18,8 +18,6 @@ ENV NODE_OPTIONS ${NODE_OPTIONS}
 
 ENV BUNDLE_PATH="/gems"
 
-RUN apk add git
-
 RUN apk update && apk add --no-cache \
   openssl \
   tar \
@@ -29,6 +27,7 @@ RUN apk update && apk add --no-cache \
   postgresql-client \
   nodejs-current \
   yarn \
+  git \
   && mkdir -p /var/app \
   && gem install bundler
 
@@ -64,8 +63,8 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   && rm -rf spec node_modules tmp/cache; \
   fi
 
-# Execute the generate-commit-hash and get the result from stdout
-RUN echo 8f60b3f1009bef1fe4be5aa5d417aa98aa3733ca > /app/.git_sha
+# Generate .git_sha file with current commit hash
+RUN git rev-parse HEAD > /app/.git_sha
 
 # Remove unnecessary files
 RUN rm -rf /gems/ruby/3.2.0/cache/*.gem \
@@ -115,9 +114,5 @@ COPY --from=pre-builder /app /app
 COPY --from=pre-builder /app/.git_sha /app/.git_sha
 
 WORKDIR /app
-
-# docker exec -it <chatwoot_container_id> bundle exec rails db:create db:migrate
-
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
 
 EXPOSE 3000
