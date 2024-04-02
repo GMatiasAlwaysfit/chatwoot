@@ -57,6 +57,9 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
 
 RUN corepack enable
 
+RUN echo "require('events').EventEmitter.defaultMaxListeners = 25;" > /usr/src/app/max-listeners.js
+ENV NODE_OPTIONS="--require /usr/src/app/max-listeners.js"
+
 COPY package.json yarn.lock ./
 RUN yarn install --audit --check-files
 
