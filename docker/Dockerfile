@@ -52,7 +52,6 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
 RUN corepack enable
 
 COPY package.json yarn.lock ./
-RUN yarn set_version stable
 RUN yarn install
 
 COPY . /app
