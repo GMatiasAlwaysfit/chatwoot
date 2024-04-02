@@ -28,12 +28,19 @@ RUN apk update && apk add --no-cache \
   nodejs-current \
   git \
   vim \
+  curl \
   && mkdir -p /var/app \
   && gem install bundler
 
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
+
+# Try some curl connections before continuing the build
+# If those connections fail, then exit 1
+RUN curl -f -s -S -L https://rubygems.org/ > /dev/null || exit 1
+RUN curl -f -s -S -L https://dl.yarnpkg.com/rpm/yarn.repo > /dev/null || exit 1
+RUN curl -f -s -S -L https://dl.yarnpkg.com/debian/pubkey.gpg > /dev/null || exit 1
 
 # natively compile grpc and protobuf to support alpine musl (dialogflow-docker workflow)
 # https://github.com/googleapis/google-cloud-ruby/issues/13306
