@@ -26,7 +26,6 @@ RUN apk update && apk add --no-cache \
   postgresql-dev \
   postgresql-client \
   nodejs-current \
-  yarn \
   git \
   vim \
   && mkdir -p /var/app \
