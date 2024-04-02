@@ -153,7 +153,7 @@
   "engines": {
     "node": "20.x",
     "npm": ">=6.x",
-    "yarn": "2.x"
+    "yarn": "3.x"
   },
   "husky": {
     "hooks": {
@@ -168,5 +168,6 @@
     "*.scss": [
       "scss-lint"
     ]
-  }
+  },
+  "packageManager": "yarn@4.1.1"
 }
