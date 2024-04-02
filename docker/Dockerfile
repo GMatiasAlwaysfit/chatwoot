@@ -61,7 +61,11 @@ RUN echo "require('events').EventEmitter.defaultMaxListeners = 25;" > /usr/max-l
 ENV NODE_OPTIONS="--require /usr/max-listeners.js"
 
 COPY package.json yarn.lock ./
-RUN yarn install --audit --check-files
+
+# If yarn version isn't 4.1.1 exit 1
+RUN yarn --version | grep -q "4.1.1" || exit 1
+
+RUN yarn install
 
 COPY . /app
 
