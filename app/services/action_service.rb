@@ -91,15 +91,5 @@ class ActionService
 
   def add_sla(id)
     @conversation.update!(sla_id: id[0])
-    create_applied_sla(id[0])
-  end
-
-  def create_applied_sla(id)
-    AppliedSla.create!(
-      account_id: @conversation.account_id,
-      sla_id: id,
-      conversation_id: @conversation.id,
-      status: 'active'
-    )
   end
 end

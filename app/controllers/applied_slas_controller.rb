@@ -1,2 +1,0 @@
-class AppliedSlasController < ApplicationController
-end

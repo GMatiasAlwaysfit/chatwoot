@@ -21,5 +21,4 @@ class Sla < ApplicationRecord
 
   belongs_to :account
   has_many :conversations, dependent: :nullify
-  has_many :applied_slas, dependent: :destroy
 end
