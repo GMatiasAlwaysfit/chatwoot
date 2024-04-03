@@ -28,19 +28,12 @@ RUN apk update && apk add --no-cache \
   nodejs-current \
   git \
   vim \
-  curl \
   && mkdir -p /var/app \
   && gem install bundler
 
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
-
-# Try some curl connections before continuing the build
-# If those connections fail, then exit 1
-RUN curl -f -s -S -L https://rubygems.org/ > /dev/null || exit 1
-RUN curl -f -s -S -L https://dl.yarnpkg.com/rpm/yarn.repo > /dev/null || exit 1
-RUN curl -f -s -S -L https://dl.yarnpkg.com/debian/pubkey.gpg > /dev/null || exit 1
 
 # natively compile grpc and protobuf to support alpine musl (dialogflow-docker workflow)
 # https://github.com/googleapis/google-cloud-ruby/issues/13306
@@ -55,15 +48,9 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   else bundle install -j 4 -r 3; \
   fi
 
-RUN corepack enable
-
-RUN echo "require('events').EventEmitter.defaultMaxListeners = 25;" > /usr/max-listeners.js
-ENV NODE_OPTIONS="--require /usr/max-listeners.js"
-
 COPY package.json yarn.lock ./
 
-# If yarn version isn't 4.1.1 exit 1
-RUN yarn --version | grep -q "4.1.1" || exit 1
+RUN corepack enable
 
 RUN yarn install
 
