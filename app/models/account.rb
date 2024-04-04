@@ -37,6 +37,7 @@ class Account < ApplicationRecord
   validates :domain, length: { maximum: 100 }
 
   has_many :slas, dependent: :destroy_async
+  has_many :sla_conversations, dependent: :destroy_async
   has_many :account_users, dependent: :destroy_async
   has_many :agent_bot_inboxes, dependent: :destroy_async
   has_many :agent_bots, dependent: :destroy_async

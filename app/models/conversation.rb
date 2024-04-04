@@ -13,6 +13,8 @@
 #  identifier             :string
 #  last_activity_at       :datetime         not null
 #  priority               :integer
+#  sla_missed_count       :integer          default(0)
+#  sla_missed_time        :integer          default(0)
 #  snoozed_until          :datetime
 #  status                 :integer          default("open"), not null
 #  uuid                   :uuid             not null
@@ -96,6 +98,7 @@ class Conversation < ApplicationRecord
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
   belongs_to :sla, optional: true
+  has_one :sla_conversation, dependent: :destroy
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
