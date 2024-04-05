@@ -116,7 +116,7 @@ COPY --from=pre-builder /app/.git_sha /app/.git_sha
 
 WORKDIR /app
 
-RUN bundle exec rails db:chatwoot_prepare
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+# RUN bundle exec rails db:chatwoot_prepare
+# CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
 
 EXPOSE 3000
