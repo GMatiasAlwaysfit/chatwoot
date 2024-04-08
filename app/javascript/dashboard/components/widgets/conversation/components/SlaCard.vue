@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      :class="`status-badge status-badge__${status} rounded-full w-2.5 h-2.5 mr-0.5 rtl:mr-0 rtl:ml-0.5 inline-flex`"
+      :class="`status-badge status-badge__${status} rounded-full w-3 h-3 mr-0.5 rtl:mr-0 rtl:ml-0.5 inline-flex`"
     />
   </div>
 </template>

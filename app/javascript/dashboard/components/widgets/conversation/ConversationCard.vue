@@ -31,7 +31,7 @@
       size="40px"
     />
     <div
-      class="px-0 py-1 h-20 border-b group-hover:border-transparent border-slate-50 dark:border-slate-800/75 columns"
+      class="px-0 py-1 h-30 border-b group-hover:border-transparent border-slate-50 dark:border-slate-800/75 columns"
     >
       <div class="flex justify-between">
         <inbox-name v-if="showInboxName" :inbox="inbox" />

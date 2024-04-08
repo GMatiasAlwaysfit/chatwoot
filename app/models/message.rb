@@ -287,6 +287,8 @@ class Message < ApplicationRecord
     handle_sla_wait_time(conversation.id) if incoming?
   end
 
+  # trocar o waiting_time de CONVERSATIONS para o time.now de quando a conversa for assigned para um agente (se a última mensagem enviada for a do cliente, se waiting time estiver preenchido)
+
   def handle_sla_wait_time(conversation_id)
     return if conversation.resolved?
 
