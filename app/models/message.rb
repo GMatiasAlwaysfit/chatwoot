@@ -288,6 +288,8 @@ class Message < ApplicationRecord
   end
 
   def handle_sla_wait_time(conversation_id)
+    return if conversation.resolved?
+
     conversation_sla = Conversation.find_by(id: conversation_id)
     return unless conversation_sla.sla_id
 
@@ -297,6 +299,8 @@ class Message < ApplicationRecord
   end
 
   def handle_sla_count_and_time(conversation_id)
+    return if conversation.resolved?
+
     conversation_sla_id = Conversation.find_by(id: conversation_id).sla_id
 
     return unless conversation_sla_id

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <p>{{ timer }}</p>
+    <div
+      :class="`status-badge status-badge__${status} rounded-full w-2.5 h-2.5 mr-0.5 rtl:mr-0 rtl:ml-0.5 inline-flex`"
+    />
   </div>
 </template>
 
@@ -17,7 +19,8 @@ export default {
   },
   data() {
     return {
-      timer: '',
+      timer: null, // Use null instead of '' for timer
+      status: '',
     };
   },
   computed: {
@@ -37,28 +40,48 @@ export default {
       this.updateTimer();
     },
   },
-  async mounted() {
+  mounted() {
     this.updateTimer();
-    setInterval(this.updateTimer, 1000);
+    this.$once('hook:beforeDestroy', () => {
+      clearInterval(this.timer);
+    });
   },
   methods: {
     updateTimer() {
-      const createdAt = new Date(this.chat.created_at * 1000);
-      const now = new Date();
-      const difference = differenceInSeconds(now, createdAt);
-      this.timer = this.formatDuration(difference);
-    },
-    formatDuration(seconds) {
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.floor((seconds % 3600) / 60);
-      const remainingSeconds = seconds % 60;
-      return `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(
-        remainingSeconds
-      )}`;
-    },
-    pad(value) {
-      return value.toString().padStart(2, '0');
+      if (!this.chat.waiting_since) {
+        clearInterval(this.timer);
+        this.timer = null;
+        this.status = '';
+        return;
+      }
+
+      if (this.timer) return;
+
+      this.timer = setInterval(() => {
+        const waiting_since = new Date(this.chat.waiting_since * 1000);
+        const now = new Date();
+        const difference = differenceInSeconds(now, waiting_since);
+
+        if (difference > this.sla.alert_time) {
+          this.status = 'warning';
+        }
+
+        if (difference > this.sla.limit_time) {
+          this.status = 'missed';
+        }
+      }, 1000);
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.status-badge {
+  &__warning {
+    @apply bg-yellow-500;
+  }
+  &__missed {
+    @apply bg-red-700;
+  }
+}
+</style>

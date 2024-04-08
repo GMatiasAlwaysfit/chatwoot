@@ -31,7 +31,7 @@
       size="40px"
     />
     <div
-      class="px-0 py-3 border-b group-hover:border-transparent border-slate-50 dark:border-slate-800/75 columns"
+      class="px-0 py-1 h-20 border-b group-hover:border-transparent border-slate-50 dark:border-slate-800/75 columns"
     >
       <div class="flex justify-between">
         <inbox-name v-if="showInboxName" :inbox="inbox" />
@@ -86,9 +86,11 @@
           {{ unreadCount > 9 ? '9+' : unreadCount }}
         </span>
       </div>
+      <div class="flex justify-end">
+        <sla-card v-if="hasSlaAttached && chat.status == 'open'" :chat="chat" />
+      </div>
       <card-labels :conversation-id="chat.id" />
     </div>
-    <sla-card v-if="hasSlaAttached && chat.status == 'open'" :chat="chat" />
     <woot-context-menu
       v-if="showContextMenu"
       ref="menu"
