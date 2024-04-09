@@ -272,46 +272,23 @@ class Message < ApplicationRecord
       Rails.configuration.dispatcher.dispatch(
         REPLY_CREATED, Time.zone.now, waiting_since: conversation.waiting_since, message: self
       )
-      conversation.update(waiting_since: nil)
-
       # call method to handle sla count and time when the agent message is sent
-      handle_sla_count_and_time(conversation.id)
+      handle_sla_count_and_time(conversation.id, conversation.sla_id, conversation.waiting_since.to_i)
+
+      conversation.update(waiting_since: nil)
     end
 
     conversation.update(waiting_since: created_at) if incoming? && conversation.waiting_since.blank?
-
-    # using sleep because in the first iteration the conversation has no sla_id, this code is executed before the sla_id is set in the worker
-    sleep(2)
-
-    # call method to create sla_waiting_time when the costumer send a message
-    handle_sla_wait_time(conversation.id) if incoming?
   end
 
-  # trocar o waiting_time de CONVERSATIONS para o time.now de quando a conversa for assigned para um agente (se a última mensagem enviada for a do cliente, se waiting time estiver preenchido)
-
-  def handle_sla_wait_time(conversation_id)
+  def handle_sla_count_and_time(_conversation_id, sla_id, waiting_since)
     return if conversation.resolved?
+    return unless sla_id
 
-    conversation_sla = Conversation.find_by(id: conversation_id)
-    return unless conversation_sla.sla_id
-
-    sla_conversation = SlaConversation.find_by(conversation_id: conversation_id)
-    # create the waiting_since field to calculate the breach when te agent sent the next message
-    sla_conversation.update!(waiting_since: conversation_sla.waiting_since) if conversation_sla.waiting_since.present?
-  end
-
-  def handle_sla_count_and_time(conversation_id)
-    return if conversation.resolved?
-
-    conversation_sla_id = Conversation.find_by(id: conversation_id).sla_id
-
-    return unless conversation_sla_id
-
-    sla_conversation = SlaConversation.find_by(conversation_id: conversation_id)
-    sla = Sla.find_by(id: conversation_sla_id)
+    sla = Sla.find_by(id: sla_id)
 
     # calculate de difference in seconds between the time limit and the current time
-    time = sla_conversation.waiting_since.to_i + sla.limit_time.to_i
+    time = waiting_since + sla.limit_time.to_i
 
     # if the current time is greater than the time limit, increment the sla_missed_count and sla_missed_time
     if Time.zone.now.to_i > time
@@ -320,9 +297,6 @@ class Message < ApplicationRecord
       conversation.increment!(:sla_missed_count, 1)
       conversation.increment!(:sla_missed_time, difference_in_seconds)
     end
-
-    # reset the waiting_since field every time the agent send a message
-    sla_conversation.update!(waiting_since: nil)
   end
 
   def human_response?
@@ -340,7 +314,7 @@ class Message < ApplicationRecord
 
     if valid_first_reply?
       Rails.configuration.dispatcher.dispatch(FIRST_REPLY_CREATED, Time.zone.now, message: self, performed_by: Current.executed_by)
-      handle_sla_count_and_time(conversation.id)
+      handle_sla_count_and_time(conversation.id, conversation.sla_id, conversation.waiting_since.to_i)
       conversation.update(first_reply_created_at: created_at, waiting_since: nil)
     else
       update_waiting_since
