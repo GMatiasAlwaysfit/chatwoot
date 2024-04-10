@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      timer: null, // Use null instead of '' for timer
+      timer: null,
       status: '',
     };
   },
@@ -42,9 +42,9 @@ export default {
   },
   mounted() {
     this.updateTimer();
-    this.$once('hook:beforeDestroy', () => {
-      clearInterval(this.timer);
-    });
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
   },
   methods: {
     updateTimer() {

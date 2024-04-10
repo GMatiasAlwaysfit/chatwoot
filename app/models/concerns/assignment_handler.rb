@@ -14,6 +14,9 @@ module AssignmentHandler
 
     validate_current_assignee_team
     self.assignee ||= find_assignee_from_team
+    return unless waiting_since.present? && first_reply_created_at.blank? && self.assignee.present?
+
+    self.waiting_since = Time.zone.now
   end
 
   def validate_current_assignee_team

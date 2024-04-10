@@ -10,6 +10,9 @@ class AutoAssignment::AgentAssignmentService
 
   def perform
     new_assignee = find_assignee
+    if conversation.waiting_since.present? && conversation.assignee_id.blank? && conversation.first_reply_created_at.blank? && find_assignee
+      conversation.update(waiting_since: Time.zone.now)
+    end
     conversation.update(assignee: new_assignee) if new_assignee
   end
 
