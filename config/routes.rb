@@ -63,6 +63,7 @@ Rails.application.routes.draw do
               post :reauthorize_page
             end
           end
+          resources :tabulations, only: [:index, :create, :show, :update, :destroy]
           resources :canned_responses, only: [:index, :create, :update, :destroy]
           resources :automation_rules, only: [:index, :create, :show, :update, :destroy] do
             post :clone
