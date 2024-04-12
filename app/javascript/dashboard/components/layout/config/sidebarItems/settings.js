@@ -39,6 +39,7 @@ const settings = accountId => ({
     'settings_teams_finish',
     'settings_teams_list',
     'settings_teams_new',
+    'tabulation_list',
   ],
   menuItems: [
     {
@@ -124,6 +125,14 @@ const settings = accountId => ({
       ),
       toStateName: 'canned_list',
       featureFlag: FEATURE_FLAGS.CANNED_RESPONSES,
+    },
+    {
+      icon: 'key',
+      label: 'TABULATION',
+      hasSubMenu: false,
+      toState: frontendURL(`accounts/${accountId}/settings/tabulation/list`),
+      toStateName: 'tabulation_list',
+      featureFlag: FEATURE_FLAGS.TABULATIONS,
     },
     {
       icon: 'flash-on',
