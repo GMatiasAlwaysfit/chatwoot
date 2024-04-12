@@ -16,5 +16,7 @@
 #  index_tabulations_on_account_id  (account_id)
 #
 class Tabulation < ApplicationRecord
+  validates :name, uniqueness: { scope: :account_id }
+
   belongs_to :account
 end
