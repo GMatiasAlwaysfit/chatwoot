@@ -1,1 +1,1 @@
-json.array! @tabulations, partial: "tabulations/tabulation", as: :tabulation
+json.array! @tabulations, partial: 'tabulations/tabulation', as: :tabulation

@@ -1,1 +1,1 @@
-json.partial! "tabulations/tabulation", tabulation: @tabulation
+json.partial! 'tabulations/tabulation', tabulation: @tabulation

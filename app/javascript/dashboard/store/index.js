@@ -43,6 +43,7 @@ import teams from './modules/teams';
 import userNotificationSettings from './modules/userNotificationSettings';
 import webhooks from './modules/webhooks';
 import draftMessages from './modules/draftMessages';
+import tabulation from './modules/tabulation';
 
 import LogRocket from 'logrocket';
 import createPlugin from 'logrocket-vuex';
@@ -104,6 +105,7 @@ export default new Vuex.Store({
     notifications,
     portals,
     reports,
+    tabulation,
     teamMembers,
     teams,
     userNotificationSettings,
