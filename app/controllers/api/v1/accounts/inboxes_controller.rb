@@ -8,6 +8,7 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
 
   def index
     @inboxes = policy_scope(Current.account.inboxes.order_by_name.includes(:channel, { avatar_attachment: [:blob] }))
+    @inbox_tabulations = InboxTabulation.where(inbox_id: @inboxes.pluck(:id)).includes(:tabulation)
   end
 
   def show; end
@@ -42,9 +43,10 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   end
 
   def update
-    @inbox.update!(permitted_params.except(:channel))
+    @inbox.update!(permitted_params.except(:channel, :tabulations))
     update_inbox_working_hours
     update_channel if channel_update_required?
+    update_tabulations
   end
 
   def agent_bot
@@ -68,6 +70,24 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   end
 
   private
+
+  def update_tabulations
+    return InboxTabulation.where(inbox_id: @inbox.id, account_id: Current.account.id).destroy_all if permitted_params[:tabulations].blank?
+
+    tabulations = permitted_params[:tabulations].split(',')
+    inbox_tabulations = InboxTabulation.where(inbox_id: @inbox.id, account_id: Current.account.id)
+
+    if inbox_tabulations.present?
+      inbox_tabulations.destroy_all
+      tabulations.each do |tabulation_id|
+        InboxTabulation.create!(inbox_id: @inbox.id, account_id: Current.account.id, tabulation_id: tabulation_id)
+      end
+    else 
+      tabulations.each do |tabulation_id|
+        InboxTabulation.create!(inbox_id: @inbox.id, account_id: Current.account.id, tabulation_id: tabulation_id)
+      end
+    end 
+  end
 
   def fetch_inbox
     @inbox = Current.account.inboxes.find(params[:id])
@@ -124,7 +144,7 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   def inbox_attributes
     [:name, :avatar, :greeting_enabled, :greeting_message, :enable_email_collect, :csat_survey_enabled,
      :enable_auto_assignment, :working_hours_enabled, :out_of_office_message, :timezone, :allow_messages_after_resolved,
-     :lock_to_single_conversation, :portal_id, :sender_name_type, :business_name]
+     :lock_to_single_conversation, :portal_id, :sender_name_type, :business_name, :tabulations]
   end
 
   def permitted_params(channel_attributes = [])
