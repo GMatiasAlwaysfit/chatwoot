@@ -19,4 +19,6 @@ class Tabulation < ApplicationRecord
   validates :name, uniqueness: { scope: :account_id }
 
   belongs_to :account
+  has_many :inbox_tabulations, dependent: :destroy
+  has_many :inboxes, through: :inbox_tabulations, dependent: :destroy
 end
