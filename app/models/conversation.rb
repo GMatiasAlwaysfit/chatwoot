@@ -27,6 +27,7 @@
 #  display_id             :integer          not null
 #  inbox_id               :integer          not null
 #  sla_policy_id          :bigint
+#  tabulation_id          :uuid
 #  team_id                :bigint
 #
 # Indexes
@@ -94,6 +95,7 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
+  belongs_to :tabulation, optional: true
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
