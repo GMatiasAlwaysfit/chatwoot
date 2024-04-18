@@ -20,6 +20,29 @@ module ActivityMessageHandler
               end
 
     ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params(content)) if content
+    create_or_update_session(self)
+  end
+
+  def create_or_update_session(conversation)
+    tabulation_id = nil
+    ongoing_session = nil
+    
+    ongoing_session = AgentSession.where(contact_id: conversation.contact_id, ended_at: nil)
+  
+    if !ongoing_session.exists? && conversation.status == "open"
+        AgentSession.create!(
+          account_id: 1,
+          contact_id: conversation.contact_id,
+          user_id: conversation.assignee_id,
+          ended_at: nil,
+          tabulation_id: tabulation_id,
+          sla_total_time: tabulation_id,
+          sla_missed_count: tabulation_id,
+          sla_id: tabulation_id
+        )
+    elsif conversation.status == "resolved" && ongoing_session.exists?
+      ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: conversation.tabulation_id)
+    end
   end
 
   def user_status_change_activity_content(user_name)
