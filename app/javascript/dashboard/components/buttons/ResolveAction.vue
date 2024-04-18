@@ -8,7 +8,7 @@
         icon="checkmark"
         emoji="✅"
         :is-loading="isLoading"
-        @click="onCmdResolveConversation"
+        @click="openTabulationModal"
       >
         {{ $t('CONVERSATION.HEADER.RESOLVE_ACTION') }}
       </woot-button>
@@ -82,6 +82,16 @@
         @choose-time="chooseSnoozeTime"
       />
     </woot-modal>
+    <woot-modal
+      :show.sync="showTabulationModal"
+      :on-close="hideTabulationModal"
+    >
+      <tabulation-modal
+        :current-inbox="inbox"
+        @close="hideTabulationModal"
+        @submit="handleTabulation"
+      />
+    </woot-modal>
   </div>
 </template>
 
@@ -91,6 +101,7 @@ import { mapGetters } from 'vuex';
 import { mixin as clickaway } from 'vue-clickaway';
 import alertMixin from 'shared/mixins/alertMixin';
 import CustomSnoozeModal from 'dashboard/components/CustomSnoozeModal.vue';
+import TabulationModal from './TabulationModal.vue';
 import eventListenerMixins from 'shared/mixins/eventListenerMixins';
 import {
   hasPressedAltAndEKey,
@@ -113,6 +124,7 @@ export default {
     WootDropdownItem,
     WootDropdownMenu,
     CustomSnoozeModal,
+    TabulationModal,
   },
   mixins: [clickaway, alertMixin, eventListenerMixins],
   props: { conversationId: { type: [String, Number], required: true } },
@@ -122,6 +134,7 @@ export default {
       showActionsDropdown: false,
       STATUS_TYPE: wootConstants.STATUS_TYPE,
       showCustomSnoozeModal: false,
+      showTabulationModal: false,
     };
   },
   computed: {
@@ -147,6 +160,9 @@ export default {
     showAdditionalActions() {
       return !this.isPending && !this.isSnoozed;
     },
+    inbox() {
+      return this.$store.getters['inboxes/getInbox'](this.currentChat.inbox_id);
+    },
   },
   mounted() {
     bus.$on(CMD_SNOOZE_CONVERSATION, this.onCmdSnoozeConversation);
@@ -159,6 +175,16 @@ export default {
     bus.$off(CMD_RESOLVE_CONVERSATION, this.onCmdResolveConversation);
   },
   methods: {
+    openTabulationModal() {
+      if (this.inbox.tabulations.length === 0) {
+        this.onCmdResolveConversation();
+        return;
+      }
+      this.showTabulationModal = true;
+    },
+    hideTabulationModal() {
+      this.showTabulationModal = false;
+    },
     async handleKeyEvents(e) {
       const allConversations = document.querySelectorAll(
         '.conversations-list .conversation'
@@ -219,6 +245,21 @@ export default {
     },
     onCmdResolveConversation() {
       this.toggleStatus(this.STATUS_TYPE.RESOLVED);
+    },
+    handleTabulation(tabulationId, snoozedUntil) {
+      this.closeDropdown();
+      this.isLoading = true;
+      this.$store
+        .dispatch('toggleStatus', {
+          conversationId: this.currentChat.id,
+          status: this.STATUS_TYPE.RESOLVED,
+          snoozedUntil,
+          tabulation: tabulationId,
+        })
+        .then(() => {
+          this.showAlert(this.$t('CONVERSATION.CHANGE_STATUS'));
+          this.isLoading = false;
+        });
     },
     showOpenButton() {
       return this.isResolved || this.isSnoozed;
