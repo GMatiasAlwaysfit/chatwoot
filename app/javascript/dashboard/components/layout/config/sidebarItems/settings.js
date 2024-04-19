@@ -40,6 +40,7 @@ const settings = accountId => ({
     'settings_teams_list',
     'settings_teams_new',
     'sla_list',
+    'tabulation_list',
   ],
   menuItems: [
     {
@@ -133,6 +134,13 @@ const settings = accountId => ({
       toState: frontendURL(`accounts/${accountId}/settings/sla/list`),
       toStateName: 'sla_list',
       featureFlag: FEATURE_FLAGS.SLA,
+    },
+    {
+      label: 'TABULATION',
+      hasSubMenu: false,
+      toState: frontendURL(`accounts/${accountId}/settings/tabulation/list`),
+      toStateName: 'tabulation_list',
+      featureFlag: FEATURE_FLAGS.TABULATIONS,
     },
     {
       icon: 'flash-on',

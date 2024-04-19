@@ -224,7 +224,7 @@ const actions = {
 
   toggleStatus: async (
     { commit },
-    { conversationId, status, snoozedUntil = null }
+    { conversationId, status, snoozedUntil = null, tabulation = null }
   ) => {
     try {
       const {
@@ -238,6 +238,7 @@ const actions = {
         conversationId,
         status,
         snoozedUntil,
+        tabulation,
       });
       commit(types.CHANGE_CONVERSATION_STATUS, {
         conversationId,

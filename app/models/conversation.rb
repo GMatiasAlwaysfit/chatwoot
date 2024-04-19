@@ -30,6 +30,7 @@
 #  inbox_id               :integer          not null
 #  sla_id                 :integer
 #  sla_policy_id          :bigint
+#  tabulation_id          :uuid
 #  team_id                :bigint
 #
 # Indexes
@@ -99,6 +100,7 @@ class Conversation < ApplicationRecord
   belongs_to :campaign, optional: true
   belongs_to :sla, optional: true
   has_one :sla_conversation, dependent: :destroy
+  belongs_to :tabulation, optional: true
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true

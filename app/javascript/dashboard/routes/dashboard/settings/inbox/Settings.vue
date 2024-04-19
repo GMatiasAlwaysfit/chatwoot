@@ -265,6 +265,26 @@
             {{ $t('INBOX_MGMT.HELP_CENTER.SUB_TEXT') }}
           </p>
         </div>
+        <div class="w-[75%] pb-4">
+          <label> Tabulações </label>
+          <multiselect
+            v-model="selectedTabulations"
+            :options="tabulations"
+            track-by="id"
+            label="name"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :hide-selected="true"
+            placeholder="Escolha"
+            selected-label
+            :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
+            :deselect-label="$t('FORMS.MULTISELECT.ENTER_TO_REMOVE')"
+          />
+          <p class="pb-1 text-sm not-italic text-slate-600 dark:text-slate-400">
+            Adicione tabulações na caixa de entrada
+          </p>
+        </div>
         <label v-if="canLocktoSingleConversation" class="w-[75%] pb-4">
           {{ $t('INBOX_MGMT.SETTINGS_POPUP.LOCK_TO_SINGLE_CONVERSATION') }}
           <select v-model="locktoSingleConversation">
@@ -478,6 +498,7 @@ export default {
       selectedTabIndex: 0,
       selectedPortalSlug: '',
       showBusinessNameInput: false,
+      selectedTabulations: [],
     };
   },
   computed: {
@@ -486,6 +507,7 @@ export default {
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
       uiFlags: 'inboxes/getUIFlags',
       portals: 'portals/allPortals',
+      tabulations: 'tabulation/getTabulations',
     }),
     selectedTabKey() {
       return this.tabs[this.selectedTabIndex]?.key;
@@ -650,6 +672,7 @@ export default {
       this.$store.dispatch('agents/get');
       this.$store.dispatch('teams/get');
       this.$store.dispatch('labels/get');
+      this.$store.dispatch('tabulation/getTabulations');
       this.$store.dispatch('inboxes/get').then(() => {
         this.avatarUrl = this.inbox.avatar_url;
         this.selectedInboxName = this.inbox.name;
@@ -669,6 +692,7 @@ export default {
         this.selectedFeatureFlags = this.inbox.selected_feature_flags || [];
         this.replyTime = this.inbox.reply_time;
         this.locktoSingleConversation = this.inbox.lock_to_single_conversation;
+        this.selectedTabulations = this.inbox.tabulations || [];
         this.selectedPortalSlug = this.inbox.help_center
           ? this.inbox.help_center.slug
           : '';
@@ -705,6 +729,12 @@ export default {
         };
         if (this.avatarFile) {
           payload.avatar = this.avatarFile;
+        }
+
+        if (this.selectedTabulations.length > 0) {
+          payload.tabulations = this.selectedTabulations.map(
+            tabulation => tabulation.id
+          );
         }
         await this.$store.dispatch('inboxes/updateInbox', payload);
         this.showAlert(this.$t('INBOX_MGMT.EDIT.API.SUCCESS_MESSAGE'));

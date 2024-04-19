@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :sla_conversations
+  resources :inbox_tabulations
   # AUTH STARTS
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
     confirmations: 'devise_overrides/confirmations',
@@ -64,6 +65,7 @@ Rails.application.routes.draw do
               post :reauthorize_page
             end
           end
+          resources :tabulations, only: [:index, :create, :show, :update, :destroy]
           resources :canned_responses, only: [:index, :create, :update, :destroy]
           resources :slas, only: [:index, :create, :show, :update, :destroy]
           resources :automation_rules, only: [:index, :create, :show, :update, :destroy] do
