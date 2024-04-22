@@ -21,4 +21,5 @@ class Tabulation < ApplicationRecord
   belongs_to :account
   has_many :inbox_tabulations, dependent: :destroy
   has_many :inboxes, through: :inbox_tabulations, dependent: :destroy
+  has_many :agent_sessions
 end
