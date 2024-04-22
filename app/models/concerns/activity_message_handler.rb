@@ -24,25 +24,42 @@ module ActivityMessageHandler
   end
 
   def create_or_update_session(conversation)
-    tabulation_id = nil
     ongoing_session = nil
 
     ongoing_session = AgentSession.where(contact_id: conversation.contact_id, ended_at: nil)
 
     if !ongoing_session.exists? && conversation.status == 'open'
       AgentSession.create!(
-        account_id: 1,
+        account_id: conversation.account_id,
         contact_id: conversation.contact_id,
         user_id: conversation.assignee_id,
         ended_at: nil,
-        tabulation_id: tabulation_id,
-        sla_total_time: tabulation_id,
-        sla_missed_count: tabulation_id,
-        sla_id: tabulation_id
+        tabulation_id: nil,
+        sla_total_time: nil,
+        sla_missed_count: nil,
+        sla_id: nil
       )
     elsif conversation.status == 'resolved' && ongoing_session.exists?
-      ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: conversation.tabulation_id)
+      calculate_sla_missed_time_after_resolved(conversation) if conversation.waiting_since.present?
+
+      ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: conversation.tabulation_id, sla_total_time: conversation.sla_missed_time,
+                              sla_missed_count: conversation.sla_missed_count, sla_id: conversation.sla_id)
+
+      conversation.update!(sla_missed_time: nil, sla_missed_count: nil, waiting_since: nil)
     end
+  end
+
+  def calculate_sla_missed_time_after_resolved(conversation)
+    sla = Sla.find_by(id: conversation.sla_id)
+
+    time = conversation.waiting_since.to_i + sla.limit_time.to_i
+
+    return unless Time.zone.now.to_i > time
+
+    difference_in_seconds = Time.zone.now.to_i - time
+
+    conversation.increment!(:sla_missed_count, 1)
+    conversation.increment!(:sla_missed_time, difference_in_seconds)
   end
 
   def user_status_change_activity_content(user_name)

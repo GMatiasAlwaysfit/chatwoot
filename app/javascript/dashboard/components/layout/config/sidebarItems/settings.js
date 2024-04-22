@@ -136,6 +136,7 @@ const settings = accountId => ({
       featureFlag: FEATURE_FLAGS.SLA,
     },
     {
+      icon: 'key',
       label: 'TABULATION',
       hasSubMenu: false,
       toState: frontendURL(`accounts/${accountId}/settings/tabulation/list`),
