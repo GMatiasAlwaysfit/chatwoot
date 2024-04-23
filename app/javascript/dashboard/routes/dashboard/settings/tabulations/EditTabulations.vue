@@ -22,7 +22,7 @@
               <input
                 v-model.trim="description"
                 type="text"
-                :placeholder="'Por favor, isira uma descrição'"
+                :placeholder="'Por favor, insira uma descrição'"
                 @input="$v.description.$touch"
               />
             </label>
@@ -34,7 +34,7 @@
               <input
                 v-model.trim="endPhrase"
                 type="text"
-                :placeholder="'Por favor, isira uma frase de encerramento'"
+                :placeholder="'Por favor, insira uma frase de encerramento'"
                 @input="$v.endPhrase.$touch"
               />
             </label>
@@ -46,7 +46,7 @@
               <input
                 v-model.trim="tabType"
                 type="text"
-                :placeholder="'Por favor, isira um tipo de tabulação'"
+                :placeholder="'Por favor, insira um tipo de tabulação'"
                 @input="$v.tabType.$touch"
               />
             </label>
