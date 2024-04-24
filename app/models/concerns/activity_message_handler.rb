@@ -33,11 +33,6 @@ module ActivityMessageHandler
         account_id: conversation.account_id,
         contact_id: conversation.contact_id,
         user_id: conversation.assignee_id,
-        ended_at: nil,
-        tabulation_id: nil,
-        sla_total_time: nil,
-        sla_missed_count: nil,
-        sla_id: nil
       )
     elsif conversation.status == 'resolved' && ongoing_session.exists?
       calculate_sla_missed_time_after_resolved(conversation) if conversation.waiting_since.present?
@@ -45,7 +40,7 @@ module ActivityMessageHandler
       ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: conversation.tabulation_id, sla_total_time: conversation.sla_missed_time,
                               sla_missed_count: conversation.sla_missed_count, sla_id: conversation.sla_id)
 
-      conversation.update!(sla_missed_time: nil, sla_missed_count: nil, waiting_since: nil)
+      conversation.update!(sla_missed_time: 0, sla_missed_count: 0, waiting_since: nil)
     end
   end
 
