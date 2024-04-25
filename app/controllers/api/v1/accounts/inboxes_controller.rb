@@ -82,11 +82,11 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
       tabulations.each do |tabulation_id|
         InboxTabulation.create!(inbox_id: @inbox.id, account_id: Current.account.id, tabulation_id: tabulation_id)
       end
-    else 
+    else
       tabulations.each do |tabulation_id|
         InboxTabulation.create!(inbox_id: @inbox.id, account_id: Current.account.id, tabulation_id: tabulation_id)
       end
-    end 
+    end
   end
 
   def fetch_inbox

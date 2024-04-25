@@ -15,9 +15,9 @@
 #
 #  index_sla_policies_on_account_id  (account_id)
 #
-class SlaPolicy < ApplicationRecord
-  belongs_to :account
-  validates :name, presence: true
+# class SlaPolicy < ApplicationRecord
+#   belongs_to :account
+#   validates :name, presence: true
 
-  has_many :conversations, dependent: :nullify
-end
+#   has_many :conversations, dependent: :nullify
+# end

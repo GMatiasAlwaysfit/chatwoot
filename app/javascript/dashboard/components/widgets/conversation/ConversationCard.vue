@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex items-start flex-grow-0 flex-shrink-0 w-auto max-w-full px-4 py-0 border-t-0 border-b-0 border-l-2 border-r-0 border-transparent border-solid cursor-pointer conversation hover:bg-slate-25 dark:hover:bg-slate-800 group"
+    class="relative h-30 flex items-start flex-grow-0 flex-shrink-0 w-auto max-w-full px-4 py-0 border-t-0 border-b-0 border-l-2 border-r-0 border-transparent border-solid cursor-pointer conversation hover:bg-slate-25 dark:hover:bg-slate-800 group"
     :class="{
       'active bg-slate-25 dark:bg-slate-800 border-woot-500': isActiveChat,
       'unread-chat': hasUnread,
@@ -31,7 +31,7 @@
       size="40px"
     />
     <div
-      class="px-0 py-3 border-b group-hover:border-transparent border-slate-50 dark:border-slate-800/75 columns"
+      class="px-0 py-1 h-30 border-b group-hover:border-transparent border-slate-50 dark:border-slate-800/75 columns"
     >
       <div class="flex justify-between">
         <inbox-name v-if="showInboxName" :inbox="inbox" />
@@ -86,6 +86,12 @@
           {{ unreadCount > 9 ? '9+' : unreadCount }}
         </span>
       </div>
+      <div class="flex justify-end h-6">
+        <sla-card
+          v-if="hasSlaAttached && chat.status == 'open' && assignee.name"
+          :chat="chat"
+        />
+      </div>
       <card-labels :conversation-id="chat.id" />
     </div>
     <woot-context-menu
@@ -125,6 +131,7 @@ import alertMixin from 'shared/mixins/alertMixin';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
 import CardLabels from './conversationCardComponents/CardLabels.vue';
 import PriorityMark from './PriorityMark.vue';
+import SlaCard from './components/SlaCard.vue';
 
 export default {
   components: {
@@ -135,6 +142,7 @@ export default {
     TimeAgo,
     MessagePreview,
     PriorityMark,
+    SlaCard,
   },
 
   mixins: [inboxMixin, timeMixin, conversationMixin, alertMixin],
@@ -251,6 +259,9 @@ export default {
     inboxName() {
       const stateInbox = this.inbox;
       return stateInbox.name || '';
+    },
+    hasSlaAttached() {
+      return this.chat?.sla_id;
     },
   },
   methods: {

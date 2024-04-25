@@ -39,6 +39,7 @@ const settings = accountId => ({
     'settings_teams_finish',
     'settings_teams_list',
     'settings_teams_new',
+    'sla_list',
     'tabulation_list',
   ],
   menuItems: [
@@ -125,6 +126,14 @@ const settings = accountId => ({
       ),
       toStateName: 'canned_list',
       featureFlag: FEATURE_FLAGS.CANNED_RESPONSES,
+    },
+    {
+      icon: 'key',
+      label: 'SLA',
+      hasSubMenu: false,
+      toState: frontendURL(`accounts/${accountId}/settings/sla/list`),
+      toStateName: 'sla_list',
+      featureFlag: FEATURE_FLAGS.SLA,
     },
     {
       icon: 'key',

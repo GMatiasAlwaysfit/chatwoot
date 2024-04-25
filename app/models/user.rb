@@ -85,6 +85,7 @@ class User < ApplicationRecord
   has_many :inboxes, through: :inbox_members, source: :inbox
   has_many :messages, as: :sender
   has_many :invitees, through: :account_users, class_name: 'User', foreign_key: 'inviter_id', source: :inviter, dependent: :nullify
+  has_many :agent_sessions
 
   has_many :custom_filters, dependent: :destroy_async
   has_many :dashboard_apps, dependent: :nullify

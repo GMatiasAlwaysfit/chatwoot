@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :sla_conversations
   resources :inbox_tabulations
   # AUTH STARTS
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
@@ -66,6 +67,7 @@ Rails.application.routes.draw do
           end
           resources :tabulations, only: [:index, :create, :show, :update, :destroy]
           resources :canned_responses, only: [:index, :create, :update, :destroy]
+          resources :slas, only: [:index, :create, :show, :update, :destroy]
           resources :automation_rules, only: [:index, :create, :show, :update, :destroy] do
             post :clone
           end

@@ -13,6 +13,8 @@
 #  identifier             :string
 #  last_activity_at       :datetime         not null
 #  priority               :integer
+#  sla_missed_count       :integer          default(0)
+#  sla_missed_time        :integer          default(0)
 #  snoozed_until          :datetime
 #  status                 :integer          default("open"), not null
 #  uuid                   :uuid             not null
@@ -26,6 +28,7 @@
 #  contact_inbox_id       :bigint
 #  display_id             :integer          not null
 #  inbox_id               :integer          not null
+#  sla_id                 :integer
 #  sla_policy_id          :bigint
 #  tabulation_id          :uuid
 #  team_id                :bigint
@@ -95,6 +98,8 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
+  belongs_to :sla, optional: true
+  has_one :sla_conversation, dependent: :destroy
   belongs_to :tabulation, optional: true
 
   has_many :mentions, dependent: :destroy_async
@@ -250,7 +255,7 @@ class Conversation < ApplicationRecord
   def allowed_keys?
     (
       previous_changes.keys.intersect?(%w[team_id assignee_id status snoozed_until custom_attributes label_list waiting_since first_reply_created_at
-                                          priority]) ||
+                                          priority sla_id]) ||
       (previous_changes['additional_attributes'].present? && previous_changes['additional_attributes'][1].keys.intersect?(%w[conversation_language]))
     )
   end

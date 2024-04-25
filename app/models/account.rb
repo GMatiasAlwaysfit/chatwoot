@@ -36,6 +36,8 @@ class Account < ApplicationRecord
   validates :auto_resolve_duration, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999, allow_nil: true }
   validates :domain, length: { maximum: 100 }
 
+  has_many :slas, dependent: :destroy_async
+  has_many :sla_conversations, dependent: :destroy_async
   has_many :account_users, dependent: :destroy_async
   has_many :agent_bot_inboxes, dependent: :destroy_async
   has_many :agent_bots, dependent: :destroy_async
@@ -77,6 +79,7 @@ class Account < ApplicationRecord
   has_many :webhooks, dependent: :destroy_async
   has_many :whatsapp_channels, dependent: :destroy_async, class_name: '::Channel::Whatsapp'
   has_many :working_hours, dependent: :destroy_async
+  has_many :agent_sessions, dependent: :destroy_async
 
   has_one_attached :contacts_export
 

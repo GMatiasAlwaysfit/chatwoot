@@ -43,6 +43,7 @@ import teams from './modules/teams';
 import userNotificationSettings from './modules/userNotificationSettings';
 import webhooks from './modules/webhooks';
 import draftMessages from './modules/draftMessages';
+import sla from './modules/sla';
 import tabulation from './modules/tabulation';
 
 import LogRocket from 'logrocket';
@@ -79,6 +80,7 @@ export default new Vuex.Store({
     bulkActions,
     campaigns,
     cannedResponse,
+    sla,
     categories,
     contactConversations,
     contactLabels,

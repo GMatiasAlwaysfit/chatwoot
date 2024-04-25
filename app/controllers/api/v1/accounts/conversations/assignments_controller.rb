@@ -13,6 +13,9 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
   private
 
   def set_agent
+    if @conversation.waiting_since.present? && @conversation.assignee_id.blank? && @conversation.first_reply_created_at.blank?
+      @conversation.update(waiting_since: Time.zone.now)
+    end
     @agent = Current.account.users.find_by(id: params[:assignee_id])
     @conversation.assignee = @agent
     @conversation.save!

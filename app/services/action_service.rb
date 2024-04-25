@@ -88,4 +88,13 @@ class ActionService
 
     @conversation.additional_attributes['type'] == 'tweet'
   end
+
+  def add_sla(id)
+    @conversation.update!(sla_id: id[0])
+    create_sla_conversation(id[0])
+  end
+
+  def create_sla_conversation(id)
+    SlaConversation.create!(sla_id: id, conversation_id: @conversation.id, account_id: @conversation.account_id)
+  end
 end
