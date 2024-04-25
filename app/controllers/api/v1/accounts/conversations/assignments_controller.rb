@@ -12,7 +12,6 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
 
   private
 
-  # logica aqui, transferencia direta para o agente
   def set_agent
     if @conversation.waiting_since.present? && @conversation.assignee_id.blank? && @conversation.first_reply_created_at.blank?
       @conversation.update(waiting_since: Time.zone.now)
@@ -58,13 +57,14 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
 
     time = conversation.waiting_since.to_i + sla.limit_time.to_i
 
+    @conversation.update!(waiting_since: Time.zone.now)
+
     return unless Time.zone.now.to_i > time
 
     difference_in_seconds = Time.zone.now.to_i - time
 
     conversation.increment!(:sla_missed_count, 1)
     conversation.increment!(:sla_missed_time, difference_in_seconds)
-    @conversation.update!(waiting_since: Time.zone.now)
   end
 
   def render_agent
