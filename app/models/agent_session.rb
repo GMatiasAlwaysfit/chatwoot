@@ -28,4 +28,7 @@ class AgentSession < ApplicationRecord
   belongs_to :sla, optional: true
   belongs_to :user, optional: true
   belongs_to :contact, optional: true
+
+  has_many :transfers_origin, class_name: "TransferSession", foreign_key: "id_session_origin"
+  has_many :transfers_destination, class_name: "TransferSession", foreign_key: "id_session_destination"
 end
