@@ -36,11 +36,13 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
 
       @conversation.update!(sla_missed_time: 0, sla_missed_count: 0)
 
-      AgentSession.create!(
+      new_session = AgentSession.create!(
         account_id: @conversation.account_id,
         contact_id: @conversation.contact_id,
         user_id: @agent.id
       )
+
+      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id)
     else
       AgentSession.create!(
         account_id: @conversation.account_id,
