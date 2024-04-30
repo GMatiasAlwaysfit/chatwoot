@@ -18,6 +18,8 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
     end
     @agent = Current.account.users.find_by(id: params[:assignee_id])
 
+    @conversation.update(transfer_observation: params[:observation])
+
     handle_agent_session_on_direct_transfer
 
     @conversation.assignee = @agent
@@ -42,7 +44,7 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
         user_id: @agent.id
       )
 
-      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id)
+      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id, transfer_observation: @conversation.transfer_observation)
     else
       AgentSession.create!(
         account_id: @conversation.account_id,
@@ -79,7 +81,7 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
 
   def set_team
     @team = Current.account.teams.find_by(id: params[:team_id])
-    @conversation.update!(team: @team)
+    @conversation.update!(team: @team, transfer_observation: params[:observation])
     render json: @team
   end
 end

@@ -134,6 +134,7 @@ module ActivityMessageHandler
     handle_agent_session_on_team_transfer(self) if key == 'assigned_with_assignee'
 
     ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params(content)) if content
+    ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params("Observação: #{self.transfer_observation}")) if self.transfer_observation.present? && key == 'assigned_with_assignee'
   end
 
   def handle_agent_session_on_team_transfer(conversation)
@@ -153,7 +154,7 @@ module ActivityMessageHandler
         user_id: conversation.assignee_id
       )
 
-      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id)
+      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id, transfer_observation: conversation.transfer_observation)
     else
       AgentSession.create!(
         account_id: conversation.account_id,
@@ -194,6 +195,7 @@ module ActivityMessageHandler
 
     content = generate_assignee_change_activity_content(user_name)
     ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params(content)) if content
+    ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params("Observação: #{self.transfer_observation}")) if self.transfer_observation.present?
   end
 
   def activity_message_ownner(user_name)
