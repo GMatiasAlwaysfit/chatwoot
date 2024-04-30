@@ -77,6 +77,15 @@
       :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_LABELS')"
     />
     <conversation-labels :conversation-id="conversationId" />
+    <woot-modal
+      :show.sync="showObservationModal"
+      :on-close="hideObservationModal"
+    >
+      <observation-modal
+        @close="hideObservationModal"
+        @submit="handleObservation"
+      />
+    </woot-modal>
   </div>
 </template>
 
@@ -90,12 +99,14 @@ import agentMixin from 'dashboard/mixins/agentMixin';
 import teamMixin from 'dashboard/mixins/conversation/teamMixin';
 import { CONVERSATION_PRIORITY } from '../../../../shared/constants/messages';
 import { CONVERSATION_EVENTS } from '../../../helper/AnalyticsHelper/events';
+import ObservationModal from './ObservationModal.vue';
 
 export default {
   components: {
     ContactDetailsItem,
     MultiselectDropdown,
     ConversationLabels,
+    ObservationModal,
   },
   mixins: [agentMixin, alertMixin, teamMixin],
   props: {
@@ -137,6 +148,9 @@ export default {
           thumbnail: `/assets/images/dashboard/priority/${CONVERSATION_PRIORITY.LOW}.svg`,
         },
       ],
+      showObservationModal: false,
+      selectedItem: null,
+      observation: null,
     };
   },
   computed: {
@@ -155,6 +169,7 @@ export default {
           .dispatch('assignAgent', {
             conversationId: this.currentChat.id,
             agentId,
+            observation: this.observation,
           })
           .then(() => {
             this.showAlert(this.$t('CONVERSATION.CHANGE_AGENT'));
@@ -170,7 +185,11 @@ export default {
         const teamId = team ? team.id : 0;
         this.$store.dispatch('setCurrentChatTeam', { team, conversationId });
         this.$store
-          .dispatch('assignTeam', { conversationId, teamId })
+          .dispatch('assignTeam', {
+            conversationId,
+            teamId,
+            observation: this.observation,
+          })
           .then(() => {
             this.showAlert(this.$t('CONVERSATION.CHANGE_TEAM'));
           });
@@ -221,6 +240,24 @@ export default {
     },
   },
   methods: {
+    openObservationModal(type, selectedItem) {
+      this.selectedItem = selectedItem;
+      this.teamOrAgent = type;
+      this.showObservationModal = true;
+    },
+    hideObservationModal() {
+      this.showObservationModal = false;
+      this.selectedItem = null;
+    },
+    handleObservation(observation) {
+      this.observation = observation;
+
+      if (this.teamOrAgent === 'agent') {
+        this.assignedAgent = this.selectedItem;
+      } else {
+        this.assignedTeam = this.selectedItem;
+      }
+    },
     onSelfAssign() {
       const {
         account_id,
@@ -248,7 +285,7 @@ export default {
       if (this.assignedAgent && this.assignedAgent.id === selectedItem.id) {
         this.assignedAgent = null;
       } else {
-        this.assignedAgent = selectedItem;
+        this.openObservationModal('agent', selectedItem);
       }
     },
 
@@ -256,7 +293,8 @@ export default {
       if (this.assignedTeam && this.assignedTeam.id === selectedItemTeam.id) {
         this.assignedTeam = null;
       } else {
-        this.assignedTeam = selectedItemTeam;
+        this.openObservationModal('team', selectedItemTeam);
+        // this.assignedTeam = selectedItemTeam;
       }
     },
 
