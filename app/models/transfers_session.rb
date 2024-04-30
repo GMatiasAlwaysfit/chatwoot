@@ -5,6 +5,7 @@
 #  id                     :uuid             not null, primary key
 #  id_session_destination :uuid             not null
 #  id_session_origin      :uuid             not null
+#  transfer_observation   :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #

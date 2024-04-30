@@ -17,6 +17,7 @@
 #  sla_missed_time        :integer          default(0)
 #  snoozed_until          :datetime
 #  status                 :integer          default("open"), not null
+#  transfer_observation   :string
 #  uuid                   :uuid             not null
 #  waiting_since          :datetime
 #  created_at             :datetime         not null
