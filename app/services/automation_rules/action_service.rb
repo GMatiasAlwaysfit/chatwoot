@@ -54,4 +54,13 @@ class AutomationRules::ActionService < ActionService
       TeamNotifications::AutomationNotificationMailer.conversation_creation(@conversation, team, params[0][:message])&.deliver_now
     end
   end
+
+  def add_sla(id)
+    @conversation.update!(sla_id: id[0])
+    create_sla_conversation(id[0])
+  end
+
+  def create_sla_conversation(id)
+    SlaConversation.create!(sla_id: id, conversation_id: @conversation.id, account_id: @conversation.account_id)
+  end
 end
