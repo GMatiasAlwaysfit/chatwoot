@@ -14,6 +14,16 @@ class AutoAssignment::AgentAssignmentService
       conversation.update(waiting_since: Time.zone.now)
     end
     conversation.update(assignee: new_assignee) if new_assignee
+
+    ongoing_session = AgentSession.where(contact_id: conversation.contact_id, ended_at: nil)
+
+    if !ongoing_session.exists? && conversation.assignee_id.present?
+      AgentSession.create!(
+        account_id: conversation.account_id,
+        contact_id: conversation.contact_id,
+        user_id: conversation.assignee_id,
+      )
+    end
   end
 
   private

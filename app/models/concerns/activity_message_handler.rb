@@ -33,11 +33,6 @@ module ActivityMessageHandler
         account_id: conversation.account_id,
         contact_id: conversation.contact_id,
         user_id: conversation.assignee_id,
-        ended_at: nil,
-        tabulation_id: nil,
-        sla_total_time: nil,
-        sla_missed_count: nil,
-        sla_id: nil
       )
     elsif conversation.status == 'resolved' && ongoing_session.exists?
       calculate_sla_missed_time_after_resolved(conversation) if conversation.waiting_since.present?
@@ -45,7 +40,7 @@ module ActivityMessageHandler
       ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: conversation.tabulation_id, sla_total_time: conversation.sla_missed_time,
                               sla_missed_count: conversation.sla_missed_count, sla_id: conversation.sla_id)
 
-      conversation.update!(sla_missed_time: nil, sla_missed_count: nil, waiting_since: nil)
+      conversation.update!(sla_missed_time: 0, sla_missed_count: 0, waiting_since: nil, tabulation_id: nil)
     end
   end
 
@@ -136,7 +131,54 @@ module ActivityMessageHandler
     params[:team_name] = generate_team_name_for_activity if key == 'removed'
     content = I18n.t("conversations.activity.team.#{key}", **params)
 
+    handle_agent_session_on_team_transfer(self) if key == 'assigned_with_assignee'
+
     ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params(content)) if content
+    ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params("Observação: #{self.transfer_observation}")) if self.transfer_observation.present? && key == 'assigned_with_assignee'
+  end
+
+  def handle_agent_session_on_team_transfer(conversation)
+    ongoing_session = AgentSession.where(contact_id: conversation.contact_id, ended_at: nil)
+
+    if ongoing_session.exists?
+      calculate_sla_missed_time_after_transfer(conversation) if conversation.waiting_since.present?
+
+      ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: conversation.tabulation_id, sla_total_time: conversation.sla_missed_time,
+                              sla_missed_count: conversation.sla_missed_count, sla_id: conversation.sla_id)
+
+      conversation.update!(sla_missed_time: 0, sla_missed_count: 0)
+
+      new_session = AgentSession.create!(
+        account_id: conversation.account_id,
+        contact_id: conversation.contact_id,
+        user_id: conversation.assignee_id
+      )
+
+      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id, transfer_observation: conversation.transfer_observation)
+    else
+      AgentSession.create!(
+        account_id: conversation.account_id,
+        contact_id: conversation.contact_id,
+        user_id: conversation.assignee_id
+      )
+
+      conversation.update!(sla_missed_time: 0, sla_missed_count: 0, waiting_since: conversation.waiting_since.present? ? Time.zone.now : nil)
+    end
+  end
+
+  def calculate_sla_missed_time_after_transfer(conversation)
+    sla = Sla.find_by(id: conversation.sla_id)
+
+    time = conversation.waiting_since.to_i + sla.limit_time.to_i
+
+    conversation.update!(waiting_since: Time.zone.now)
+
+    return unless Time.zone.now.to_i > time
+
+    difference_in_seconds = Time.zone.now.to_i - time
+
+    conversation.increment!(:sla_missed_count, 1)
+    conversation.increment!(:sla_missed_time, difference_in_seconds)
   end
 
   def generate_assignee_change_activity_content(user_name)
@@ -153,6 +195,7 @@ module ActivityMessageHandler
 
     content = generate_assignee_change_activity_content(user_name)
     ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params(content)) if content
+    ::Conversations::ActivityMessageJob.perform_later(self, activity_message_params("Observação: #{self.transfer_observation}")) if self.transfer_observation.present?
   end
 
   def activity_message_ownner(user_name)

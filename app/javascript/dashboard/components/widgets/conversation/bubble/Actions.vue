@@ -1,6 +1,7 @@
 <template>
   <div class="message-text--metadata">
     <span
+      v-if="!(textContent.includes('Observação:') && messageType == 2)"
       class="time"
       :class="{
         'has-status-icon':
@@ -133,6 +134,10 @@ export default {
     inboxId: {
       type: [String, Number],
       default: 0,
+    },
+    textContent: {
+      type: String,
+      default: '',
     },
   },
   computed: {

@@ -17,9 +17,58 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
       @conversation.update(waiting_since: Time.zone.now)
     end
     @agent = Current.account.users.find_by(id: params[:assignee_id])
+
+    @conversation.update(transfer_observation: params[:observation])
+
+    handle_agent_session_on_direct_transfer
+
     @conversation.assignee = @agent
     @conversation.save!
     render_agent
+  end
+
+  def handle_agent_session_on_direct_transfer
+    ongoing_session = AgentSession.where(contact_id: @conversation.contact_id, ended_at: nil)
+
+    if ongoing_session.exists?
+      calculate_sla_missed_time_after_transfer(@conversation) if @conversation.waiting_since.present?
+
+      ongoing_session.update!(ended_at: Time.zone.now, tabulation_id: @conversation.tabulation_id, sla_total_time: @conversation.sla_missed_time,
+                              sla_missed_count: @conversation.sla_missed_count, sla_id: @conversation.sla_id)
+
+      @conversation.update!(sla_missed_time: 0, sla_missed_count: 0)
+
+      new_session = AgentSession.create!(
+        account_id: @conversation.account_id,
+        contact_id: @conversation.contact_id,
+        user_id: @agent.id
+      )
+
+      TransfersSession.create!(id_session_origin: ongoing_session.first.id, id_session_destination: new_session.id, transfer_observation: @conversation.transfer_observation)
+    else
+      AgentSession.create!(
+        account_id: @conversation.account_id,
+        contact_id: @conversation.contact_id,
+        user_id: @agent.id
+      )
+
+      @conversation.update!(sla_missed_time: 0, sla_missed_count: 0, waiting_since: @conversation.waiting_since.present? ? Time.zone.now : nil)
+    end
+  end
+
+  def calculate_sla_missed_time_after_transfer(conversation)
+    sla = Sla.find_by(id: conversation.sla_id)
+
+    time = conversation.waiting_since.to_i + sla.limit_time.to_i
+
+    @conversation.update!(waiting_since: Time.zone.now)
+
+    return unless Time.zone.now.to_i > time
+
+    difference_in_seconds = Time.zone.now.to_i - time
+
+    conversation.increment!(:sla_missed_count, 1)
+    conversation.increment!(:sla_missed_time, difference_in_seconds)
   end
 
   def render_agent
@@ -32,7 +81,7 @@ class Api::V1::Accounts::Conversations::AssignmentsController < Api::V1::Account
 
   def set_team
     @team = Current.account.teams.find_by(id: params[:team_id])
-    @conversation.update!(team: @team)
+    @conversation.update!(team: @team, transfer_observation: params[:observation])
     render json: @team
   end
 end

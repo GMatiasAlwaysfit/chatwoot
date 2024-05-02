@@ -66,15 +66,15 @@ class ConversationApi extends ApiClient {
     });
   }
 
-  assignAgent({ conversationId, agentId }) {
+  assignAgent({ conversationId, agentId, observation }) {
     return axios.post(
       `${this.url}/${conversationId}/assignments?assignee_id=${agentId}`,
-      {}
+      { observation }
     );
   }
 
-  assignTeam({ conversationId, teamId }) {
-    const params = { team_id: teamId };
+  assignTeam({ conversationId, teamId, observation }) {
+    const params = { team_id: teamId, observation };
     return axios.post(`${this.url}/${conversationId}/assignments`, params);
   }
 

@@ -1,6 +1,12 @@
 <template>
   <li v-if="shouldRenderMessage" :id="`message${data.id}`" :class="alignBubble">
-    <div :class="wrapClass">
+    <div
+      :class="
+        data.content.includes('Observação:') && data.message_type == 2
+          ? 'observation'
+          : wrapClass
+      "
+    >
       <div v-if="isFailed && !hasOneDayPassed" class="message-failed--alert">
         <woot-button
           v-tooltip.top-end="$t('CONVERSATION.TRY_AGAIN')"
@@ -85,6 +91,7 @@
         </div>
         <bubble-actions
           :id="data.id"
+          :text-content="data.content"
           :sender="data.sender"
           :story-sender="storySender"
           :external-error="externalError"
@@ -548,6 +555,21 @@ export default {
 };
 </script>
 <style lang="scss">
+.observation {
+  @apply flex justify-center text-sm my-1 mx-3 py-1 pr-0.5 pl-2.5 bg-slate-50 dark:bg-slate-600 text-slate-800 dark:text-slate-100 rounded-md border border-solid bg-yellow-100 dark:bg-yellow-700 border-yellow-200 dark:border-yellow-600/25;
+  min-height: 44px;
+
+  .is-text {
+    @apply inline-flex items-center text-start 2xl:flex;
+  }
+}
+
+.observation .message-text__wrap {
+  .text-content p {
+    @apply mb-0 mr-2;
+  }
+}
+
 .wrap {
   > .bubble {
     @apply min-w-[128px];

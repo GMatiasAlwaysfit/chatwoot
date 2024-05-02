@@ -314,7 +314,7 @@ class Message < ApplicationRecord
 
     if valid_first_reply?
       Rails.configuration.dispatcher.dispatch(FIRST_REPLY_CREATED, Time.zone.now, message: self, performed_by: Current.executed_by)
-      handle_sla_count_and_time(conversation.id, conversation.sla_id, conversation.waiting_since.to_i)
+      handle_sla_count_and_time(conversation.id, conversation.sla_id, conversation.waiting_since.to_i) if conversation.waiting_since.present?
       conversation.update(first_reply_created_at: created_at, waiting_since: nil)
     else
       update_waiting_since
