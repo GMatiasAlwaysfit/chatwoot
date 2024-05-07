@@ -2,7 +2,9 @@
   <li v-if="shouldRenderMessage" :id="`message${data.id}`" :class="alignBubble">
     <div
       :class="
-        data.content.includes('Observação:') && data.message_type == 2
+        typeof data.content === 'string' &&
+        data.content.includes('Observação:') &&
+        data.message_type == 2
           ? 'observation'
           : wrapClass
       "

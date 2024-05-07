@@ -1,7 +1,13 @@
 <template>
   <div class="message-text--metadata">
     <span
-      v-if="!(textContent.includes('Observação:') && messageType == 2)"
+      v-if="
+        !(
+          typeof textContent === 'string' &&
+          textContent.includes('Observação:') &&
+          messageType == 2
+        )
+      "
       class="time"
       :class="{
         'has-status-icon':
