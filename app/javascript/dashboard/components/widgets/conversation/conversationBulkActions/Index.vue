@@ -19,7 +19,7 @@
         </span>
       </label>
       <div class="bulk-action__actions flex-between">
-        <woot-button
+        <!-- <woot-button
           v-tooltip="$t('BULK_ACTION.LABELS.ASSIGN_LABELS')"
           size="tiny"
           variant="smooth"
@@ -36,7 +36,7 @@
           icon="repeat"
           class="margin-right-smaller"
           @click="toggleUpdateActions"
-        />
+        /> -->
         <woot-button
           v-tooltip="$t('BULK_ACTION.ASSIGN_AGENT_TOOLTIP')"
           size="tiny"

@@ -1,5 +1,5 @@
 <template>
-  <div class="profile--settings--row text-black-900 dark:text-slate-300 row">
+  <!-- <div class="profile--settings--row text-black-900 dark:text-slate-300 row">
     <div class="w-[25%] py-4 pr-6 ml-0">
       <h4 class="block-title text-black-900 dark:text-slate-200">
         {{ $t('PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.TITLE') }}
@@ -32,7 +32,7 @@
         {{ $t('PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.BTN_TEXT') }}
       </woot-button>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>

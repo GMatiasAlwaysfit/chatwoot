@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <woot-button
+    <!-- <woot-button
       icon="wand"
       color-scheme="secondary"
       variant="smooth"
@@ -9,14 +9,14 @@
       @click="onClick"
     >
       {{ $t('INTEGRATION_SETTINGS.OPEN_AI.AI_ASSIST') }}
-    </woot-button>
+    </woot-button> -->
 
-    <div
+    <!-- <div
       class="radar-ping-animation absolute top-0 right-0 -mt-1 -mr-1 rounded-full w-3 h-3 bg-woot-500 dark:bg-woot-500"
     />
     <div
       class="absolute top-0 right-0 -mt-1 -mr-1 rounded-full w-3 h-3 bg-woot-500 dark:bg-woot-500 opacity-50"
-    />
+    /> -->
   </div>
 </template>
 <script>

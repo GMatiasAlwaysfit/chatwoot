@@ -1,6 +1,6 @@
 <template>
   <div class="flex actions--container relative items-center gap-2">
-    <woot-button
+    <!-- <woot-button
       v-if="!currentChat.muted"
       v-tooltip="$t('CONTACT_PANEL.MUTE_CONTACT')"
       variant="clear"
@@ -22,7 +22,7 @@
       color-scheme="secondary"
       icon="share"
       @click="toggleEmailActionsModal"
-    />
+    /> -->
     <resolve-action
       :conversation-id="currentChat.id"
       :status="currentChat.status"

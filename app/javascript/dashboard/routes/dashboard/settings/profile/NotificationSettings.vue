@@ -1,5 +1,5 @@
 <template>
-  <div id="profile-settings-notifications">
+  <!-- <div id="profile-settings-notifications">
     <div class="profile--settings--row text-black-900 dark:text-slate-300 row">
       <div class="columns small-3">
         <h4 class="block-title text-black-900 dark:text-slate-200">
@@ -350,7 +350,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>

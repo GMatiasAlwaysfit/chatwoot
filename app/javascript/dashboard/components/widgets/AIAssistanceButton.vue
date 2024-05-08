@@ -5,7 +5,7 @@
         v-if="shouldShowAIAssistCTAButton"
         @click="openAIAssist"
       />
-      <woot-button
+      <!-- <woot-button
         v-else
         v-tooltip.top-end="$t('INTEGRATION_SETTINGS.OPEN_AI.AI_ASSIST')"
         icon="wand"
@@ -13,7 +13,7 @@
         variant="smooth"
         size="small"
         @click="openAIAssist"
-      />
+      /> -->
       <woot-modal
         :show.sync="showAIAssistanceModal"
         :on-close="hideAIAssistanceModal"
